@@ -1,0 +1,113 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx:1.17.10-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "nginx_conf:/etc/nginx"
+      - "nginx_wwwroot:/var/www/html:ro"
+    deploy: 
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+
+  php70:
+    image: surenkid/php7:7.0-fpm
+    volumes:
+      - "php70_conf:/usr/local/etc/php"
+      - "php70_fpm:/usr/local/etc/php-fpm.d"
+      - "nginx_wwwroot:/var/www/html"
+    command: ["php-fpm"]
+    deploy: 
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+
+  php72:
+    image: surenkid/php7:7.2-fpm
+    volumes:
+      - "php72_conf:/usr/local/etc/php"
+      - "php72_fpm:/usr/local/etc/php-fpm.d"
+      - "nginx_wwwroot:/var/www/html"
+    deploy: 
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+
+  php72supervisord:
+    image: surenkid/php7:7.2-fpm-supervisor
+    volumes:
+      - "php72_supervisord:/etc/supervisor.d"
+      - "php72_crontab:/etc/crontabs"
+      - "nginx_wwwroot:/var/www/html"
+    deploy: 
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+
+volumes:
+  nginx_conf:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/nginx"
+  nginx_wwwroot:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/web"
+  php70_conf:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/php/70-php-conf"
+  php70_fpm:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/php/70-php-fpm"
+  php70_supervisord:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/php/70-php-supervisord"
+  php72_conf:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/php/72-php-conf"
+  php72_fpm:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/php/72-php-fpm"
+  php72_supervisord:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/php/72-php-supervisord"
+  php72_crontab:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/php/72-php-crontab"

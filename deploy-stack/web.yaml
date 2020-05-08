@@ -33,7 +33,7 @@ services:
     image: surenkid/php7:7.2-fpm-supervisor
     volumes:
       - "php72_supervisord:/etc/supervisor.d"
-      - "php72_crontab:/etc/crontabs"
+      - "php72_crontab:/var/spool/cron/crontabs/root"
       - "nginx_wwwroot:/var/www/html"
     deploy: 
       replicas: 1

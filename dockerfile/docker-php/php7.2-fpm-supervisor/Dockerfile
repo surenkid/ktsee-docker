@@ -9,7 +9,7 @@ LABEL maintainer="surenkids@gmail.com"
 RUN apk add --no-cache supervisor \
       && apk add --no-cache wget \
       && mkdir /etc/supervisor.d \
-      && wget --no-check-certificate -O /etc/supervisor.d/php-fpm.ini http://down.ktsee.com/s1/2019/11/28/5de08a0cc20a2.txt
+      && wget --no-check-certificate -O /etc/supervisor.d/php-fpm.ini https://static.ktsee.com/s1/2019/11/28/5de08a0cc20a2.txt
 
 # Open control panel
 RUN sed -i 's/;port=127.0.0.1:9001/port=*:9001/g' /etc/supervisord.conf

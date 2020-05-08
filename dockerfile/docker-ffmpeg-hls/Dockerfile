@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.11.6
 MAINTAINER https://github.com/surenkid/
 
 ENV MP4_VIDEO_DIR=/root/input \

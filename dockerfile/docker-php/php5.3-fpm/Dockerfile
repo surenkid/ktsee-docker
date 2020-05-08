@@ -107,7 +107,7 @@ COPY docker-php-* /usr/local/bin/
 
 RUN cd /tmp \
       && mkdir -p /usr/src/php/ext/phpredis \
-      && curl -sL "https://github.com/phpredis/phpredis/archive/master.tar.gz" -o phpredis.tar.gz \
+      && curl -sL "https://github.com/phpredis/phpredis/archive/4.3.0.tar.gz" -o phpredis.tar.gz \
       && tar -xof phpredis.tar.gz -C /usr/src/php/ext/phpredis --strip-components=1 \
       && rm -rf /tmp/*
 

@@ -1,0 +1,36 @@
+version: "3"
+services:
+
+  postgres:
+    image: postgres:9.3-alpine
+    container_name: redmine-postgres
+    #user: root:root
+    #restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./postgres/data:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_DB: "redmine"
+      POSTGRES_PASSWORD: "redmine"
+
+  redmine:
+    image: redmine:3.4.6
+    container_name: redmine-main
+    #restart: always
+    #user: root:root
+    ports:
+      - "3000:3000"
+    depends_on:
+      - "postgres"
+    environment:
+      REDMINE_DB_POSTGRES: "postgres"
+      REDMINE_DB_PASSWORD: "redmine"
+      REDMINE_DB_DATABASE: "redmine"
+    volumes:
+      - "./redmine/files:/usr/src/redmine/files"
+      - "./redmine/sqlite:/usr/src/redmine/sqlite"
+      - "./redmine/plugins:/usr/src/redmine/plugins"
+      - "./redmine/vendor/plugins:/usr/src/redmine/vendor/plugins"
+      - "./redmine/themes:/usr/src/redmine/public/themes"
+      - "./redmine/configuration.yml:/usr/src/redmine/config/configuration.yml"

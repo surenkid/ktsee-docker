@@ -1,0 +1,63 @@
+de:
+  label_add_review: Review hinzufügen
+  label_show_review: Review anzeigen
+  code_reviews: Code Reviews
+  code_review: Code Review
+  project_module_code_review: Code Reviews
+  label_code_path: Verzeichnis
+  label_code_reviewer: Reviewer
+  label_code_author: Author
+  label_code_line: Zeile
+
+  label_review_open: offen
+  label_review_closed: geschlossen
+
+  label_reopen_review: Review erneut öffnen
+  label_close_review: Review abschließen
+
+  label_code_review_plural: Code Reviews
+
+  label_line_number: 'Zeile: {{line}}'
+  notice_review_updated: Review erfolgreich aktualisiert.
+  label_show_closed_reviews: Zeige geschlossene Reviews.
+  label_review: Review
+  label_review_new: Neuer Review
+  review_notify_only_involved_in: "Nur, wenn ich daran irgendwie beteiligt bin."
+  review_notify_all: "Jeder Review in meinen Projekten"
+
+  old_review_data_found: 'Es sind alte Review Informationen vorhanden. Möchten Sie, das diese in neue Datensätze konvertiert werden?'
+  select_tracker_for_code_reviews: 'Tracker für Code Reviews.'
+  field_hide_code_review_tab: '"Code Reviews" Reiter verstecken.'
+  lable_no_code_reviews: 'Keine Code Reviews'
+  field_comment: Kommentar
+
+  label_if_revision_has_issues: 'Wenn eine Revision Tickets hat'
+  label_review_issue_relates: 'Dazugehörige Tickets anzeigen'
+  label_review_issue_blocks: 'Blockierende Tickets anzeigen'
+  label_review_issue_do_nothing: 'Nichts ausführen'
+
+  permission_view_code_review: Code Reviews anzeigen
+  permission_add_code_review: Code Reviews erstellen
+  permission_edit_code_review: Code Reviews bearbeiten
+  permission_delete_code_review: Code Reviews löschen
+  permission_code_review_setting: Code Reviews verwalten
+  permission_assign_code_review: Code Reviews zuweisen
+
+  select_tracker_for_code_review_assignment: 'Wählen Sie den tracker für die Code Review Tickets.'
+  field_assignment_tracker: 'Tracker'
+  review_assignments: Review Zuweisungen
+  review_assigned_for: Review zugewiesen an
+  code_review_assigned: zugewiesen
+  code_review_reviewed: Review abgeschlossen
+  code_review_requrest: Review angefordert
+  
+  label_auto_assign_settings: automatische Zuweisung
+  label_candidates_of_reviewer: Candidates of reviewer
+  label_auto_assignment_filters: Filter
+  auto_assign_filter_expression: 'Pfad (Regulärer Ausdruck: z.B. "/src/.*\.java$")'
+  auto_assign_filter_assign: zuweisen
+  auto_assign_filter_drop: entfernen
+  
+  label_parent_suggestion: Vielleicht "%{issue_id}" ?
+  
+  label_assign_review: "Assign"

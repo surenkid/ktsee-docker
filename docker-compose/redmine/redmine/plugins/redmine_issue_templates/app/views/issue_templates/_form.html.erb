@@ -1,0 +1,145 @@
+<%= error_messages_for 'issue_template' %>
+<div class="box tabular box-white">
+  <p><%= f.text_field :title, required: true, size: 80, label: l(:issue_template_name) %></p>
+
+  <fieldset class="issue">
+    <legend class="issue"><%= l(:label_applied_for_issue) %></legend>
+    <p>
+      <% if issue_template.tracker.blank? %>
+          <%= f.select :tracker_id, template_target_trackers(project, issue_template),
+                       required: true, label: l(:label_tracker), include_blank: true  %>
+      <% else %>
+          <%= f.select :tracker_id, template_target_trackers(project, issue_template),
+                       required: true, label: l(:label_tracker), selected: issue_template.tracker.id %>
+          <% unless project_tracker?(issue_template.tracker, project) %><br/>
+              <%= non_project_tracker_msg(project_tracker?(issue_template.tracker, project)) %>
+          <% end %>
+      <% end %>
+    </p>
+    <p><%= f.text_field :issue_title, required: false, size: 80, label: l(:issue_title) %>
+      <a class="icon icon-help template-help" title="<%= l(:help_for_this_field) %>"
+         data-template-help-target="#issue_title_help_content"><%= l(:help_for_this_field) %></a>
+      <br/>
+      <span id="issue_title_help_content" class="issue_template help_content" style="display: none;">
+        <%= l(:help_for_issue_title) %>
+      </span>
+    </p>
+    <p>
+      <%= f.text_area :description, cols: 78, rows: 12,
+                      required: true,
+                      label: l(:issue_description) %>
+    </p>
+
+    <!-- for Checklist -->
+    <% if checklist_enabled %>
+        <p id="checklist_form">
+          <label>Checklist</label>
+          <input type="text" id="checklist_text" class="edit-box">
+          <span class="icon icon-add checklist-new-only save-new-by-button"
+                onclick="addCheckList();">
+          </span>
+          <ul class='checklist' style='padding-left: 180px;'>
+            <% issue_template.checklist.each_with_index do |content, i| %>
+              <li id="checklist_<%= i %>">
+                <span class="text">
+                  <%= content %>
+                  <a class="icon icon-del" href="javascript:void(0)" onclick="removeCheckList(this);"></a>
+                </span>
+                <input type="hidden" name="issue_template[checklists][]"
+                       id="issue_template_checklist" value="<%= content %>">
+              </li>
+            <% end %>
+          </ul>
+        </p>
+    <% end %>
+  </fieldset>
+  <p>
+    <%= f.text_area :note, cols: 70, rows: 3,
+                    required: false,
+                    label: l(:issue_template_note) %>
+  </p>
+
+  <p><%= f.check_box :is_default, label: l(:field_is_default) %>
+    <a class="icon icon-help template-help" title="<%= l(:help_for_this_field) %>"
+       data-template-help-target="#isdefault_help_content">
+      <%= l(:help_for_this_field) %>
+    </a>
+    <br/>
+    <span id="isdefault_help_content" class="issue_template help_content" style="display: none;">
+      <%= l(:label_isdefault_help_message) %>
+    </span>
+  </p>
+  <p>
+    <%= f.check_box :enabled, label: l(:label_enabled) %>
+    <a class="icon icon-help template-help" title="<%= l(:help_for_this_field) %>"
+       data-template-help-target="#enabled_help_content"><%= l(:help_for_this_field) %>
+    </a>
+    <br/>
+    <span id="enabled_help_content" class="issue_template help_content" style="display: none;">
+      <%= l(:label_enabled_help_message) %>
+    </span>
+  </p>
+
+  <p>
+    <%= f.check_box :enabled_sharing, label: l(:label_enabled_sharing) %>
+    <a class="icon icon-help template-help" title="<%= l(:help_for_this_field) %>"
+       data-template-help-target="#enabledsharing_help_content">
+      <%= l(:help_for_this_field) %>
+    </a>
+    <br/>
+    <span id="enabledsharing_help_content" class="issue_template help_content" style="display: none;">
+      <%= l(:label_enabledshaing_help_message) %>
+    </span>
+  </p>
+
+</div>
+
+<%= wikitoolbar_for 'issue_template_description' %>
+
+
+<script type="text/javascript">
+  var checklist = $('.checklist');
+
+  function removeCheckList(obj) {
+    var target = obj.closest('li')
+    target.remove();
+  }
+
+  function addCheckList() {
+    var text = $('#checklist_text').val();
+    if (text == '') return false;
+
+    $('.checklist-item').each(function(i, elem) {
+      e = $(elem)
+      if ((text == e.val())) {
+        return;
+      }
+    })
+    addCheckListItem(text);
+    $('#checklist_text').val('');
+  }
+
+  function addCheckListItem(value) {
+    var li = $('<li>');
+    var text = $('<span class="text">').text(value);
+    var hidden = $("<input>", {
+      type: 'hidden',
+      id: 'issue_template_checklist',
+      name: 'issue_template[checklists][]',
+      class: 'checklist-item',
+      value: value
+    }).appendTo(li);
+
+    var remove_link = $("<a>", {
+      class: 'icon icon-del',
+    });
+
+    text.append(remove_link);
+    li.append(text);
+    checklist.append(li);
+
+    $('body').on('click','.icon.icon-del', function() {
+      removeCheckList(this);
+    });
+  }
+</script>

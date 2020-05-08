@@ -1,0 +1,126 @@
+<%
+# Code Review plugin for Redmine
+# Copyright (C) 2009-2015  Haruyuki Iida
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-%>
+<script>
+  function cr_sort_filter(url, action) {
+      $('#auto_assign_filter_move_to').val(action);
+    $('#auto_assignment_filters').load(url, $('#code_review_form').serialize());
+  }
+</script>
+
+<p>
+  <label><%=h l(:label_auto_assignment_filters)%></label>
+  <%= check_box_tag 'auto_assign[filter_enabled]', true, @auto_assign.filter_enabled?, :onchange => 'setAutoAssignSettingFiltersEnable();' %><%=h l(:button_activate)%>
+
+</p>
+<div id="auto_assignment_filter_form" style="display: <%=  @auto_assign.filter_enabled? ? 'true' : 'none'%>;">
+  <div style="padding: 5px 0 8px 180px;">
+    <div class="contextual">
+      <%= link_to_function(l(:button_add), "$('#add_filter_form').show('blind');", :class => 'icon icon-add') %>
+    </div>
+    <table class="list">
+      <thead>
+        <tr>
+          <th style="width: 1em; text-align: right;">#</th>
+          <th style="width: 8em;"><%=h l(:auto_assign_filter_assign)%>/<%=h l(:auto_assign_filter_drop) %></th>
+          <th><%=h l(:auto_assign_filter_expression)%> </th>
+          <th><%=h l(:button_sort) %> </th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @auto_assign.filters.each_with_index do |filter, i| -%>
+          <% tr_class =  cycle('odd', 'even') -%>
+          <tr class="<%= tr_class %>" id="auto_assign_tr_<%= i%>">
+            <td style="text-align: right"><%= i + 1 %>
+              <%= hidden_field_tag "auto_assign[filters][#{i}][accept]", filter.accept? %>
+              <%= hidden_field_tag "auto_assign[filters][#{i}][expression]", filter.expression %>
+              <%= hidden_field_tag "auto_assign[filters][#{i}][order]", (i+1) * 10 %>
+            </td>
+            <td style="text-align: center"><%= filter.accept? ? l(:auto_assign_filter_assign) : l(:auto_assign_filter_drop)%> </td>
+            <td style="text-align: center"><%= filter.expression %></td>
+            <td align="center" style="width:15%;">
+              <%= hidden_field_tag "auto_assign_filter[num]", i %>
+              <%= hidden_field_tag "auto_assign_filter[move_to]", 'highest', :id => 'auto_assign_filter_move_to' %>
+              <%
+              name = 'auto_assign_filter'
+              sorturl = url_for({:controller => 'code_review_settings', :action => 'sort', :id => @project})
+
+              -%>
+              <%=
+              link_to(image_tag('2uparrow.png',  :alt => l(:label_sort_highest)), '#', :onclick => "cr_sort_filter('#{sorturl}', 'highest')", :title => l(:label_sort_highest)) +
+                link_to(image_tag('1uparrow.png',   :alt => l(:label_sort_higher)), '#', :onclick => "cr_sort_filter('#{sorturl}', 'higher')", :title => l(:label_sort_higher)) +
+                link_to(image_tag('1downarrow.png', :alt => l(:label_sort_lower)), '#', :onclick => "cr_sort_filter('#{sorturl}', 'lower')", :title => l(:label_sort_lower)) +
+                link_to(image_tag('2downarrow.png', :alt => l(:label_sort_lowest)), '#', :onclick => "cr_sort_filter('#{sorturl}', 'lowest')", :title => l(:label_sort_lowest))
+              -%>
+
+            </td>
+            <td class="buttons">
+              <span class="icon icon-del">
+                <%= link_to_function(l(:button_delete), "$('#auto_assign_tr_#{i}').remove();")%>
+              </span><span class="icon icon-edit">
+                <%= link_to_function(l(:button_edit), "$('#auto_assign_tr_#{i}').hide();$('#auto_assign_edit_tr_#{i}').show()")%>
+              </span>
+
+            </td>
+          </tr>
+          <tr class="<%= tr_class %>" id="auto_assign_edit_tr_<%= i%>" style="display: none;">
+            <td style="text-align: right">
+              <%= i + 1 %>
+            </td>
+            <td style="text-align: center">
+              <%= hidden_field_tag "auto_assign_edit_filter[#{i}][order]", (i + 1) * 10 %>
+              <%= select_tag("auto_assign_edit_filter[#{i}][accept]",
+                options_for_select([[l(:auto_assign_filter_assign), true], [l(:auto_assign_filter_drop), false]], filter.accept?)) %>
+            </td>
+            <td><%= text_field_tag("auto_assign_edit_filter[#{i}][expression]", filter.expression, :size => 60)%>
+            </td>
+            <td></td>
+            <td style="white-space: nowrap">
+              <%= button_tag(l(:button_apply), type: 'button', onclick: "update_assign_filter(#{i})", :condition => "is_valid_expression($('#auto_assign_edit_filter_#{i}_expression'))") %>
+              <%= button_tag(l(:button_cancel), type: 'button', onclick: "$('#auto_assign_tr_#{i}').show();$('#auto_assign_edit_tr_#{i}').hide()") %>
+            </td>
+          </tr>
+        <% end -%>
+        <tr id="add_filter_form" style="display: none;">
+          <td style="text-align: right"><%= @auto_assign.filters.length + 1 %> </td>
+          <td>
+            <%= hidden_field_tag 'auto_assign_add_filter[order]', 999999999 %>
+            <%= select_tag('auto_assign_add_filter[accept]',
+              options_for_select([[l(:auto_assign_filter_assign), true], [l(:auto_assign_filter_drop), false]])) %>
+          </td>
+          <td><%= text_field_tag('auto_assign_add_filter[expression]', '', :size => 60)%>
+          </td>
+          <td></td>
+          <td style="white-space: nowrap;">
+            <%= button_tag(l(:button_apply), type: 'button', onclick:'add_assign_filter()') %>
+            <%= button_tag(l(:button_cancel), type: 'button', onclick:"$('#add_filter_form').hide()") %>
+
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+  <p>
+    <label><%=h l(:label_default)%></label>
+    <%= select(:auto_assign, :accept_for_default,  [[l(:auto_assign_filter_assign), true], [l(:auto_assign_filter_drop), false]]) %>
+  </p>
+
+</div>

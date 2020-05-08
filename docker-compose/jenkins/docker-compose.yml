@@ -1,0 +1,16 @@
+version: "3"
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    user: root:root
+    environment:
+       DOCKER_URL: ''
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "./jenkins/jenkins_home:/var/jenkins_home"
+      - "./jenkins/.ssh:/var/jenkins_home/.ssh"
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+      

@@ -1,0 +1,121 @@
+<%
+# Code Review plugin for Redmine
+# Copyright (C) 2009-2015  Haruyuki Iida
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+-%>
+
+
+<div class="box">
+  <h2>
+    <%= l(:label_line_number, :line => @review.line) %>
+  </h2>
+  <%= form_for @review,:as => :review,
+    :url => {:controller => 'code_review', :action => 'new', :id=>@project}, :html => {:id => 'review_form'} do |f|  %>
+    <%= error_messages_for 'review' %>
+    <%= error_messages_for 'issue' %>
+    <%= error_messages_for 'relation' %>
+    <%= f.hidden_field(:change_id) %>
+    <%= f.hidden_field(:line) %>
+    <%= hidden_field_tag(:action_type, @review.action_type) %>
+    <%= hidden_field_tag(:rev, @review.revision) %>
+    <%= hidden_field_tag(:rev_to, @review.rev_to) %>
+    <%= hidden_field_tag(:path, @review.path) %>
+    <%= hidden_field_tag(:file_count, @review.file_count) %>
+    <%= hidden_field_tag(:attachment_id, @review.attachment_id) %>
+    <%= hidden_field_tag(:repository_id, @repository_id) %>
+    <%= hidden_field_tag(:diff_all, @review.diff_all) %>
+    <p>
+      <label><b><%=h l(:field_subject)%>:</b></label>
+      <%= f.text_field :subject, :size => 70, :required => true %>
+    </p>
+
+    <% if @setting.tracker_in_review_dialog %>
+      <p>
+        <label><b><%=h l(:label_tracker) %>:</b></label>
+        <%= select :issue, :tracker_id, @project.trackers.collect {|t| [t.name, t.id]}, :required => true %>
+        <script type="text/javascript">
+
+            $(function(){
+                $('#issue_tracker_id').change(function(){
+                    var url = "<%= url_for(:controller => 'code_review', :action => 'new') -%>";
+                    url = url + '?' + $('#review_form').serialize();
+                    $('#review-form').load(url);
+                });
+            });
+        </script>
+      </p>
+    <% end %>
+    <p>
+      <label><b><%=h l(:field_parent_issue)%>:</b></label>
+      <%= f.text_field :parent_id, :size => 10 %>
+      <% if @parent_candidate %>
+        <%= raw l(:label_parent_suggestion, {:issue_id => link_to_issue(@parent_candidate)}) %>
+        <input type="button" value="<%=h l(:general_text_Yes)%>" onclick="$('#review_parent_id').val(<%= @parent_candidate.id %>)"/>
+      <% end %>
+    </p>
+    <% @issue.custom_field_values.each do |value| %>
+      <% next unless value.required? -%>
+      <p><%= custom_field_tag_with_label :issue, value %></p>
+    <% end %>
+    <p>
+      <%= f.text_area :comment,
+        :cols => 30,
+        :rows => 12,
+        :accesskey => accesskey(:edit),
+        :class => 'wiki-edit' %>
+
+    </p>
+    <p>
+      <label><b><%=h l(:field_assigned_to) %>:</b></label>
+      <%= select :issue, :assigned_to_id, (@issue.assignable_users.collect {|m| [m.name, m.id]}), :include_blank => true %>
+    </p>
+    <% unless @project.issue_categories.empty? %>
+      <p>
+        <label><b><%=h l(:field_category) %>:</b></label>
+        <%= select :issue, :category_id, (@project.issue_categories.collect {|c| [c.name, c.id]}), :include_blank => true %>
+      </p>
+    <% end %>
+    <% unless @issue.assignable_versions.empty? %>
+      <p>
+        <label><b><%=h l(:field_fixed_version) %>:</b></label>
+        <%= select :issue, :fixed_version_id, (@issue.assignable_versions.collect {|v| [v.name, v.id]}), :include_blank => true, :selected => @default_version_id %>
+      </p>
+    <% end %>
+
+    <%
+      @allowed_statuses = @issue.new_statuses_allowed_to(User.current)
+    -%>
+    <% if @issue.new_record? || @allowed_statuses.any? %>
+      <p><label><b><%= l(:field_status) %>:</b></label> <%= f.select :status_id, (@allowed_statuses.collect {|p| [p.name, p.id]}), :required => true %></p>
+    <% else %>
+      <p><label><b><%= l(:field_status) %>:</b></label> <%= h(@issue.status.name) %></p>
+    <% end %>
+    <p>
+      <%
+      submit_url = url_for(:controller => 'code_review', :action => 'new', :id=>@project)
+      %>
+      <%= button_tag l(:button_apply), type: 'button', onclick: "$('#review-form').load('#{submit_url}', $('#review_form').serialize2json())" %>
+
+      <input type="button" value="<%=h l(:button_cancel) %> " onclick="javascript:hideForm();"/>
+      <%= preview_link({ :controller => 'code_review', :action => 'preview', :id => @project}, 'review_form') %>
+    </p>
+    <div id="preview" class="wiki"></div>
+    <%= wikitoolbar_for 'review_comment' %>
+  <% end %>
+
+</div>
+
+

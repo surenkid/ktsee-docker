@@ -1,0 +1,10 @@
+^coverage/
+^rails/
+^VERSION$
+^code_review.gemspec
+^pkg/
+^Gemfile.lock$
+^Gemfile$
+syntax: glob
+test/coverage
+.flow

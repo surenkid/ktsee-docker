@@ -1,0 +1,31 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:5.6
+    container_name: mysql-replication
+    # user: root:root
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+       MYSQL_ROOT_PASSWORD: sumei15b
+    volumes:
+      - "./mysql/data:/var/lib/mysql"
+      - "./mysql/my.cnf:/etc/mysql/my.cnf"
+      - "./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d"
+    ports:
+      - "3306:3306"
+    networks:
+      - devnet
+
+  #redis:
+  #  image: redis:4-alpine
+  #  container_name: dev-redis
+  #  ports:
+  #    - "6379:6379"
+  #  networks:
+  #    - devnet
+  #  volumes:
+  #    - "./redis/data:/data"
+
+networks:
+  devnet:

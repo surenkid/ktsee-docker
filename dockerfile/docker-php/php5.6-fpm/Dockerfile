@@ -13,7 +13,7 @@ RUN apk add --no-cache freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev \
 RUN apk add --no-cache libxml2-dev libmcrypt-dev openssl-dev unixodbc-dev libstdc++ libzip-dev
 
 # Copy Zend loader to extionsion dir and install them
-COPY zend-loader-php5.6-linux-x86_64/*.so /usr/local/lib/php/extensions/no-debug-non-zts-20131226
+COPY zend-loader-php5.6-linux-x86_64/files/ /usr/local/lib/php/extensions/no-debug-non-zts-20131226/
 RUN docker-php-ext-enable ZendGuardLoader opcache
 
 # Install extensions using docker-php-ext-install

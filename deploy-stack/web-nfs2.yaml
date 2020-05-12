@@ -18,8 +18,21 @@ services:
       placement:
         constraints: [node.role == worker]
 
+  php56:
+    image: surenkid/ktsee-php:5.6-fpm
+    volumes:
+      - "php56_conf:/usr/local/etc/php"
+      - "php56_fpm:/usr/local/etc/php-fpm.d"
+      - "nginx_wwwroot:/var/www/html"
+    deploy: 
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+
   php72:
-    image: surenkid/php7:7.2-fpm
+    image: surenkid/ktsee-php:7.2-fpm
     volumes:
       - "php72_conf:/usr/local/etc/php"
       - "php72_fpm:/usr/local/etc/php-fpm.d"
@@ -34,7 +47,7 @@ services:
         constraints: [node.role == worker]
 
   php72supervisord:
-    image: surenkid/php7:7.2-fpm-supervisor
+    image: surenkid/ktsee-php:7.2-fpm-supervisor
     volumes:
       - "php72_supervisord:/etc/supervisor.d"
       - "php72_crontab:/etc/crontabs"

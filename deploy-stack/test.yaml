@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  nginx:
+    image: alpine:3.11.6
+    volumes:
+      - "nfs2_test:/root/test/test2"
+      - "nfs1_test:/root/test"
+    command: top
+    deploy: 
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == worker]
+
+volumes:
+  nfs1_test:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=10.10.3.3,vers=4,soft,rw
+      device: ":/test"
+  nfs2_test:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=10.10.3.4,vers=4,soft,rw
+      device: ":/test"

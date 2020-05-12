@@ -179,11 +179,8 @@ RUN set -ex \
     echo 'daemonize = no'; \
     echo; \
     echo '[www]'; \
-    echo 'listen = 9000'; \
+    echo 'listen = 0.0.0.0:9000'; \
   } | tee php-fpm.d/zz-docker.conf
-
-# fix php-fpm listen address
-RUN sed -i -e "s/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/g" /usr/local/etc/php-fpm.d/www.conf
 
 # fix xdebug library path
 RUN { \

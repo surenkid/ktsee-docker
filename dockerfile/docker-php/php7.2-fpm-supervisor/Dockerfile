@@ -1,4 +1,4 @@
-FROM surenkid/php7:7.2-fpm
+FROM surenkid/ktsee-php:7.2-fpm
 LABEL maintainer="surenkids@gmail.com"
 
 # Change alpine repo for China network

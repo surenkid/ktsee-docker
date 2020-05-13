@@ -113,10 +113,10 @@ volumes:
     driver_opts:
       type: nfs
       o: addr=${nfs2},vers=4,soft,rw
-      device: ":/upload/static.sumeils.com"
+      device: ":/volumes/upload/static.sumeils.com"
   nfs2_truly_mall_upload:
     driver: local
     driver_opts:
       type: nfs
       o: addr=${nfs2},vers=4,soft,rw
-      device: ":/upload/truly-mall.sumeils.com"
+      device: ":/volumes/upload/truly-mall.sumeils.com"

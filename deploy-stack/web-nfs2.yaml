@@ -72,6 +72,18 @@ volumes:
       type: nfs
       o: addr=${nfs},vers=4,soft,rw
       device: ":/volumes/web"
+  php56_conf:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/php/56-php-conf"
+  php56_fpm:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/php/56-php-fpm"
   php72_conf:
     driver: local
     driver_opts:

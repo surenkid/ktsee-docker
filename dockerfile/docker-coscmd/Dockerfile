@@ -14,4 +14,4 @@ RUN echo '0       2       *       *       *       sh /root/coscmd.sh' | tee -a /
 VOLUME [ "/root" ]
 
 # Start cron
-CMD ["crond -f"]
+CMD ["crond","-f"]

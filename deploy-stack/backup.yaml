@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  coscmd:
+    image: surenkid/ktsee-coscmd:latest
+    volumes:
+      - "coscmd_nfs1:/mnt/nfs1"
+      - "coscmd_nfs2:/mnt/nfs2"
+      - "coscmd_config:/root"
+    deploy: 
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+volumes:
+  coscmd_nfs1:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes"
+  coscmd_nfs2:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs2},vers=4,soft,rw
+      device: ":/volumes"
+  coscmd_config:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/coscmd"

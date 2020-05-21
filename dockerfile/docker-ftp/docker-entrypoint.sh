@@ -4,8 +4,8 @@ if [ -z ${PASSWORD} ]; then
   echo "Generated password for user 'ftp': ${PASSWORD}"
 fi
 # set ftp user password
-echo "ftp:${PASSWORD}" |/usr/sbin/chpasswd
-chown ftp:ftp /var/lib/ftp/ -R
+echo "ktsee:${PASSWORD}" |/usr/sbin/chpasswd
+chown ktsee:ktsee /home/ktsee/ -R
 
 if [ -z $1 ]; then
   /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf

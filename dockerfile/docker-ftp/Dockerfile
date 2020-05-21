@@ -6,10 +6,7 @@ ARG GROUP_ID=82
 
 RUN apk add --no-cache vsftpd
 
-RUN apk add --no-cache --virtual .modify-user-group-id-deps shadow && \
-  usermod -u ${USER_ID} ftp && \
-  groupmod -g ${GROUP_ID} ftp && \
-  apk del .modify-user-group-id-deps
+RUN adduser -h /home/ktsee -u ${USER_ID} -G ${GROUP_ID} -s /bin/false -D ktsee
 
 RUN echo "local_enable=YES" >> /etc/vsftpd/vsftpd.conf \
   && echo "chroot_local_user=YES" >> /etc/vsftpd/vsftpd.conf \
@@ -18,10 +15,12 @@ RUN echo "local_enable=YES" >> /etc/vsftpd/vsftpd.conf \
   && echo "local_umask=022" >> /etc/vsftpd/vsftpd.conf \
   && echo "passwd_chroot_enable=yes" >> /etc/vsftpd/vsftpd.conf \
   && echo 'seccomp_sandbox=NO' >> /etc/vsftpd/vsftpd.conf \
-  && echo 'pasv_enable=Yes' >> /etc/vsftpd/vsftpd.conf \
+  && echo 'pasv_enable=YES' >> /etc/vsftpd/vsftpd.conf \
   && echo 'pasv_max_port=10100' >> /etc/vsftpd/vsftpd.conf \
   && echo 'pasv_min_port=10090' >> /etc/vsftpd/vsftpd.conf \
-  && sed -i "s/anonymous_enable=YES/anonymous_enable=NO/" /etc/vsftpd/vsftpd.conf
+  && echo 'chown_uploads=NO' >> /etc/vsftpd/vsftpd.conf \
+  && echo 'local_root=/home/share' >> /etc/vsftpd/vsftpd.conf \
+  && sed -i "s/anonymous_enable=YES/anonymous_enable=NO/" /etc/vsftpd/vsftpd.conf \
 
 ADD docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh

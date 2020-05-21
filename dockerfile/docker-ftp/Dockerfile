@@ -6,7 +6,8 @@ ARG GROUP_ID=82
 
 RUN apk add --no-cache vsftpd
 
-RUN adduser -h /home/ktsee -u ${USER_ID} -G ${GROUP_ID} -s /bin/false -D ktsee
+RUN addgroup -g ${GROUP_ID} -S ktsee && \
+  adduser -h /home -u ${USER_ID} -S ktsee -G ktsee
 
 RUN echo "local_enable=YES" >> /etc/vsftpd/vsftpd.conf \
   && echo "chroot_local_user=YES" >> /etc/vsftpd/vsftpd.conf \
@@ -20,7 +21,7 @@ RUN echo "local_enable=YES" >> /etc/vsftpd/vsftpd.conf \
   && echo 'pasv_min_port=10090' >> /etc/vsftpd/vsftpd.conf \
   && echo 'chown_uploads=NO' >> /etc/vsftpd/vsftpd.conf \
   && echo 'local_root=/home/share' >> /etc/vsftpd/vsftpd.conf \
-  && sed -i "s/anonymous_enable=YES/anonymous_enable=NO/" /etc/vsftpd/vsftpd.conf \
+  && sed -i "s/anonymous_enable=YES/anonymous_enable=NO/" /etc/vsftpd/vsftpd.conf
 
 ADD docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh

@@ -4,8 +4,8 @@ services:
   nginx:
     image: alpine:3.11.6
     volumes:
-      - "nfs2_test:/root/test/test2"
-      - "nfs1_test:/root/test"
+      - "nfs1_test:/root/test1"
+      - "nfs2_test:/root/test2"
     command: top
     deploy: 
       replicas: 1

@@ -8,8 +8,7 @@ services:
       - "443:443"
     volumes:
       - "nginx_conf:/etc/nginx"
-      - "web_html:/var/www/html:ro"
-      - "web_storage:/var/www/storage:ro"
+      - "nginx_wwwroot:/var/www/html:ro"
     deploy: 
       replicas: 1
       restart_policy:
@@ -18,26 +17,9 @@ services:
         constraints: [node.role == worker]
 
   php72:
-    image: surenkid/ktsee-php:7.2-fpm
+    image: surenkid/php7:7.2-fpm
     volumes:
-      - "php72_conf:/usr/local/etc/php"
-      - "php72_fpm:/usr/local/etc/php-fpm.d"
-      - "web_html:/var/www/html:ro"
-      - "web_storage:/var/www/storage:ro"
-    deploy: 
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints: [node.role == worker]
-
-  php72supervisord:
-    image: surenkid/ktsee-php:7.2-fpm-supervisor
-    volumes:
-      - "php72_supervisord:/etc/supervisor.d"
-      - "php72_crontab:/etc/crontabs"
-      - "web_html:/var/www/html"
-      - "web_storage:/var/www/storage:ro"
+      - "nginx_wwwroot:/var/www/html"
     deploy: 
       replicas: 1
       restart_policy:
@@ -52,17 +34,11 @@ volumes:
       type: nfs
       o: addr=${nfs},vers=4,soft,rw
       device: ":/volumes/nginx"
-  web_html:
+  nginx_wwwroot:
     driver: local
     driver_opts:
       type: nfs
       o: addr=${nfs},vers=4,soft,rw
-      device: ":/volumes/web"
-  web_storage:
-    driver: local
-    driver_opts:
-      type: nfs
-      o: addr=${nfs2},vers=4,soft,rw
       device: ":/volumes/web"
   php72_conf:
     driver: local

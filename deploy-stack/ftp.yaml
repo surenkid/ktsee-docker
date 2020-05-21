@@ -2,22 +2,19 @@ version: "3"
 
 services:
   ftp:
-    image: surenkid/docker-vsftpd:latest
+    image: surenkid/ktsee-ftp:latest
     volumes:
-      - "ftp_www:/home/vsftpd"
+      - "ftp_www:/home"
     ports:
       - "21:21"
       - "21100-21110:21100-21110"
     environment:
-      PASV_ADDRESS: ${host}
-      FTP_USER: ${user}
-      FTP_PASS: ${pass}
+      PASSWORD: ${pass}
+      PASV_ENABLE: "YES"
+      PASV_ADDRESS: ${ip}
+      PASV_ADDR_RESOLVE: "NO"
       PASV_MIN_PORT: 21100
       PASV_MAX_PORT: 21110
-      PASV_ADDR_RESOLVE: "YES"
-      FILE_OPEN_MODE: 0777
-      LOCAL_UMASK: 000
-      LOG_STDOUT: "YES"
     deploy: 
       replicas: 1
       restart_policy:

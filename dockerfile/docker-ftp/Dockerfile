@@ -26,7 +26,7 @@ RUN echo "local_enable=YES" >> /etc/vsftpd/vsftpd.conf \
 ADD docker-entrypoint.sh /
 RUN chmod +x /docker-entrypoint.sh
 
-VOLUME /var/lib/ftp
+VOLUME /home
 
 EXPOSE 20 21 10090-10100
 

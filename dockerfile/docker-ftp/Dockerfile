@@ -3,6 +3,11 @@ LABEL maintainer="surenkids@gmail.com"
 
 ARG USER_ID=82
 ARG GROUP_ID=82
+ENV PASV_ENABLE YES
+ENV PASV_ADDRESS **IPv4**
+ENV PASV_ADDR_RESOLVE NO
+ENV PASV_MIN_PORT 21100
+ENV PASV_MAX_PORT 21110
 
 RUN apk add --no-cache vsftpd
 
@@ -18,9 +23,6 @@ RUN echo "local_enable=YES" >> /etc/vsftpd/vsftpd.conf \
   && echo "passwd_chroot_enable=yes" >> /etc/vsftpd/vsftpd.conf \
   && echo 'chown_uploads=NO' >> /etc/vsftpd/vsftpd.conf \
   && echo 'local_root=/home' >> /etc/vsftpd/vsftpd.conf \
-  && echo 'pasv_enable=YES' >> /etc/vsftpd/vsftpd.conf \
-  && echo 'pasv_max_port=10100' >> /etc/vsftpd/vsftpd.conf \
-  && echo 'pasv_min_port=10090' >> /etc/vsftpd/vsftpd.conf \
   && sed -i "s/anonymous_enable=YES/anonymous_enable=NO/" /etc/vsftpd/vsftpd.conf
 
 ADD docker-entrypoint.sh /

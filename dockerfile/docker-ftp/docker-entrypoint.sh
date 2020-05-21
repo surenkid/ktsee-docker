@@ -16,7 +16,11 @@ echo "pasv_addr_resolve=${PASV_ADDR_RESOLVE}" >> /etc/vsftpd/vsftpd.conf
 
 # set ftp user password
 echo "ktsee:${PASSWORD}" |/usr/sbin/chpasswd
-chown ktsee:ktsee /home/ -R
+
+# set home dir permission
+if [ -z ${IGNORE_PERMISSION} ]; then
+    chown ktsee:ktsee /home/ -R
+fi
 
 if [ -z $1 ]; then
   /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf

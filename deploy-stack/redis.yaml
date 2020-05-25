@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:5.0.9-alpine3.11
+    ports:
+      - "6379:6379"
+    volumes:
+      - "redis_db:/data"
+      - "redis_config:/usr/local/etc/redis"
+    deploy: 
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.hostname == VM_3_22_coreos]
+
+volumes:
+  redis_db:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/redis/db"
+  redis_config:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs},vers=4,soft,rw
+      device: ":/volumes/redis/config"

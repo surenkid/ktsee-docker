@@ -9,8 +9,9 @@ services:
     volumes:
       - "nginx_conf:/etc/nginx"
       - "nginx_wwwroot:/var/www/html:ro"
-      - "nfs2_static_upload:/var/www/html/surenkid/static.sumeils.com/s1"
-      - "nfs2_truly_mall_upload:/var/www/html/surenkid/truly-mall.sumeils.com/upload"
+      - "nfs2_web_static:/var/www/html/static.sumeils.com/s1"
+      - "nfs2_web_truly_mall:/var/www/html/truly-mall.sumeils.com/upload"
+      - "nfs2_web_vinistyle:/var/www/html/www.vinistyle.cn/d"
     deploy: 
       replicas: 5
       restart_policy:
@@ -37,8 +38,9 @@ services:
       - "php72_conf:/usr/local/etc/php"
       - "php72_fpm:/usr/local/etc/php-fpm.d"
       - "nginx_wwwroot:/var/www/html"
-      - "nfs2_static_upload:/var/www/html/surenkid/static.sumeils.com/s1"
-      - "nfs2_truly_mall_upload:/var/www/html/surenkid/truly-mall.sumeils.com/upload"
+      - "nfs2_web_static:/var/www/html/static.sumeils.com/s1"
+      - "nfs2_web_truly_mall:/var/www/html/truly-mall.sumeils.com/upload"
+      - "nfs2_web_vinistyle:/var/www/html/www.vinistyle.cn/d"
     deploy: 
       replicas: 5
       restart_policy:
@@ -108,15 +110,21 @@ volumes:
       type: nfs
       o: addr=${nfs},vers=4,soft,rw
       device: ":/volumes/php/72-php-crontab"
-  nfs2_static_upload:
+  nfs2_web_static:
     driver: local
     driver_opts:
       type: nfs
       o: addr=${nfs2},vers=4,soft,rw
-      device: ":/volumes/upload/static.sumeils.com"
-  nfs2_truly_mall_upload:
+      device: ":/volumes/web/static.sumeils.com/s1"
+  nfs2_web_truly_mall:
     driver: local
     driver_opts:
       type: nfs
       o: addr=${nfs2},vers=4,soft,rw
-      device: ":/volumes/upload/truly-mall.sumeils.com"
+      device: ":/volumes/web/truly-mall.sumeils.com/upload"
+  nfs2_web_vinistyle:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=${nfs2},vers=4,soft,rw
+      device: ":/volumes/web/www.vinistyle.cn/d"

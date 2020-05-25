@@ -5,6 +5,11 @@ LABEL maintainer="surenkids@gmail.com"
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
+# Change timezone to Asia/Shanghai
+RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+  && echo "Asia/Shanghai" > /etc/timezone \
+  && apk del tzdata
+
 # Install coscmd
 RUN pip install coscmd
 

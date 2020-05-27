@@ -17,8 +17,9 @@ RUN apk add --no-cache rsync
 RUN echo '0/5       *       *       *       *       sh /root/rsync/cron-rsync.sh' | tee -a /etc/crontabs/root
 
 # Create mountable directory
-RUN mkdir -p /root/folder1 \ 
-  && mkdir -p /root/folder2
+RUN mkdir -p /root/rysnc \ 
+  && mkdir -p /root/code \ 
+  && mkdir -p /root/upload
 
 # Define mountable directories
 VOLUME ["/root/rysnc", "/root/code", "/root/upload"]

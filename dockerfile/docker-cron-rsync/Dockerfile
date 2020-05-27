@@ -22,7 +22,7 @@ RUN echo '*/5       *       *       *       *       sh /root/rsync/cron-rsync.sh
 #  && mkdir -p /root/upload
 
 # Define mountable directories
-VOLUME ["/root/rysnc", "/root/code", "/root/upload"]
+VOLUME ["/root/rsync", "/root/code", "/root/upload"]
 
 # Start cron
 CMD ["crond","-f"]

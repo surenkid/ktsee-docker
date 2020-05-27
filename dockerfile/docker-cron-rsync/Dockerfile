@@ -14,7 +14,7 @@ RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 RUN apk add --no-cache rsync
 
 # Add coscmd script to crontab
-RUN echo '0/5       *       *       *       *       sh /root/rsync/cron-rsync.sh' | tee -a /etc/crontabs/root
+RUN echo '*/5       *       *       *       *       sh /root/rsync/cron-rsync.sh' | tee -a /etc/crontabs/root
 
 # Create mountable directory
 #RUN mkdir -p /root/rsync \ 

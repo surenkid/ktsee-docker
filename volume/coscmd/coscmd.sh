@@ -3,7 +3,7 @@ upload_dir=/$(date "+%Y/%m/%d")
 delete_dir=/$(date --date="@$(($(date +%s) - 3600*24*90))" "+%Y/%m/%d")
 
 # backup folders
-set "/nfs1" "/nfs2/upload/static.sumeils.com/2020" "/nfs2/upload/truly-mall.sumeils.com"
+set "/nfs2/mongo" "/nfs2/mysql"
 for path in do "$@"
 do
 	tar cvzf /archive.tar.gz $path
@@ -13,7 +13,7 @@ done
 set x; shift
 
 # backup sub folders
-set "/nfs1" "/nfs2/upload/static.sumeils.com/2020" "/nfs2/upload/truly-mall.sumeils.com"
+set "/nfs1" "/nfs2/web"
 for path in do "$@"
 do
 	dirList=`ls -p $path |grep / |tr -d /`

@@ -18,6 +18,7 @@ RUN echo "*       *       *       *       *       /usr/bin/flock -xn /root/cron-
 
 # Add readiness prode script
 COPY readiness-probe.sh /root/
+RUN chmod +x /root/readiness-probe.sh
 
 # Define mountable directories
 VOLUME ["/root/rsync", "/root/code", "/root/upload"]

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-myDeploy="/var/www/html/deploy.ktsee"
+myDeploy="/root/deploy.ktsee"
 
 if [ -f "$myDeploy" ]; then
   echo 'Deploy success'

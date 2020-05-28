@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  nginx:
+  alpine:
     image: alpine:3.11.6
     volumes:
       - "nfs1_test:/root/test1"

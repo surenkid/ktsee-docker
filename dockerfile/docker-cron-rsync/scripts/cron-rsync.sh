@@ -6,7 +6,7 @@ remote_dir=/root/remote/
 # check last pull and last push
 remote_push_time=`cat /root/remote/last-part-push.ktsee`
 local_pull_time=`cat /root/last-full-pull.ktsee`
-if [ $remote_push_time -gt $local_pull_time ]; then
+if [ $remote_push_time -gt $local_pull_time ] || [ ! -f "/root/remote/last-part-push.ktsee" ] || [ ! -f "/root/last-full-pull.ktsee" ]; then
     # Pull code from remote
     rsync -avzhupgo $remote_dir $local_dir >> /proc/self/fd/2
 

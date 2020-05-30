@@ -14,7 +14,7 @@ RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 RUN apk add --no-cache rsync
 
 # Add coscmd script to crontab
-RUN echo "*       *       *       *       *       /usr/bin/flock -xn /root/cron-rsync.lock -c 'sh /root/rsync/cron-rsync.sh'" | tee -a /etc/crontabs/root
+RUN echo "*       *       *       *       *       /usr/bin/flock -xn /root/cron-rsync.lock -c 'sh /root/cron-rsync.sh'" | tee -a /etc/crontabs/root
 
 # Add readiness prode script
 COPY scripts/*.sh /root/
@@ -24,4 +24,4 @@ RUN chmod +x /root/*.sh
 VOLUME ["/root/rsync", "/root/remote"]
 
 # Start cron
-CMD ["crond","-f"]
+CMD nohup sh -c 'crond -f && sh /root/inotify-rsync-push.sh'

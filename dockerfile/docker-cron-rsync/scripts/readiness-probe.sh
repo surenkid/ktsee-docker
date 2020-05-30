@@ -1,6 +1,6 @@
 #!/bin/sh
 
-myDeploy="/root/deploy.ktsee"
+myDeploy="/root/last-full-pull.ktsee"
 
 if [ -f "$myDeploy" ]; then
   echo 'Deploy success'

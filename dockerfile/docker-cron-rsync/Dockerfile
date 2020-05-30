@@ -17,11 +17,11 @@ RUN apk add --no-cache rsync
 RUN echo "*       *       *       *       *       /usr/bin/flock -xn /root/cron-rsync.lock -c 'sh /root/rsync/cron-rsync.sh'" | tee -a /etc/crontabs/root
 
 # Add readiness prode script
-COPY readiness-probe.sh /root/
-RUN chmod +x /root/readiness-probe.sh
+COPY scripts/*.sh /root/
+RUN chmod +x /root/*.sh
 
 # Define mountable directories
-VOLUME ["/root/rsync", "/root/code", "/root/upload"]
+VOLUME ["/root/rsync", "/root/remote"]
 
 # Start cron
 CMD ["crond","-f"]

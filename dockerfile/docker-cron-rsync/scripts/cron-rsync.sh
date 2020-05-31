@@ -32,6 +32,7 @@ if [ $remote_push_time -gt $local_pull_time ]; then
 
     # update last pull time
     echo $cur_timestamp > /root/last-full-pull.ktsee
+    touch /root/deploy.ktsee
 fi
 
 # === push files from local to remote ===

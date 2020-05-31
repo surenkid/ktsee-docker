@@ -5,9 +5,6 @@ remote_dir=/root/remote
 
 # === pull files from remote to local ===
 # check last pull and last push
-remote_push_time=`cat /root/remote/last-part-push.ktsee`
-local_pull_time=`cat /root/last-full-pull.ktsee`
-
 if [ ! -f /root/remote/last-part-push.ktsee ]; then
     echo 0000000000000 > /root/remote/last-part-push.ktsee
 fi
@@ -15,6 +12,8 @@ if [ ! -f /root/last-full-pull.ktsee ]; then
     echo 0000000000000 > /root/last-full-pull.ktsee
 fi
 
+remote_push_time=`cat /root/remote/last-part-push.ktsee`
+local_pull_time=`cat /root/last-full-pull.ktsee`
 if [ $remote_push_time -gt $local_pull_time ]; then
     # Pull code from remote
     echo "Starting pull files from $remote_dir/ to $local_dir/"

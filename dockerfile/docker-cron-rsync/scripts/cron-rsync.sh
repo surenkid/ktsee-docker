@@ -1,15 +1,24 @@
 #!/bin/sh
-local_dir=/var/www/html/
-remote_dir=/root/remote/
+local_dir=/var/www/html
+remote_dir=/root/remote
 
 
-# === pull files ===
+# === pull files from remote to local ===
 # check last pull and last push
 remote_push_time=`cat /root/remote/last-part-push.ktsee`
 local_pull_time=`cat /root/last-full-pull.ktsee`
-if [ ! -f /root/remote/last-part-push.ktsee ] || [ ! -f /root/last-full-pull.ktsee ] || [ $remote_push_time -gt $local_pull_time ]; then
+
+if [ ! -f /root/remote/last-part-push.ktsee ]; then
+    echo 0000000000000 > /root/remote/last-part-push.ktsee
+fi
+if [ ! -f /root/last-full-pull.ktsee ]; then
+    echo 0000000000000 > /root/last-full-pull.ktsee
+fi
+
+if [ $remote_push_time -gt $local_pull_time ]; then
     # Pull code from remote
-    rsync -avzupgo $remote_dir $local_dir >> /proc/self/fd/2
+    echo "Starting pull files from $remote_dir/ to $local_dir/"
+    rsync -avzupgo $remote_dir/ $local_dir/ --exclude=last-part-push.ktsee >> /proc/self/fd/2
 
     # get current timestamp
     cur_sec_and_ns=`date '+%s-%N'`
@@ -21,7 +30,7 @@ if [ ! -f /root/remote/last-part-push.ktsee ] || [ ! -f /root/last-full-pull.kts
     echo $cur_timestamp > /root/last-full-pull.ktsee
 fi
 
-# === push files ===
+# === push files from local to remote ===
 if [ -f /root/pre-push-file-list.ktsee ]; then
     # remove repeat line
     sort /root/pre-push-file-list.ktsee | uniq > /root/push-file-list.ktsee
@@ -30,13 +39,10 @@ if [ -f /root/pre-push-file-list.ktsee ]; then
     # copy changed path
     while read path
     do
-        if [ ! -d $remote_dir$path ]; then
-            mkdir -p $remote_dir$path
-            chown -R 82:82 $remote_dir$path
-        fi
-        rsync -avzupgo --exclude=*/ $local_dir$path $remote_dir$path >> /proc/self/fd/2
+        echo "Starting push files from $local_dir/$path/ to $remote_dir/$path/"
+        rsync -avzupgo --exclude=*/ $local_dir/$path/ $remote_dir/$path/ >> /proc/self/fd/2
     done < /root/push-file-list.ktsee;
-    rm -rf /root/push-file-list.ktsee
+    # rm -rf /root/push-file-list.ktsee
 
     # get current timestamp
     cur_sec_and_ns=`date '+%s-%N'`

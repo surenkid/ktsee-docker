@@ -24,6 +24,6 @@ RUN chmod +x /root/*.sh
 RUN mkdir -p /var/www/html
 
 # Define mountable directories
-VOLUME ["/root/rsync", "/root/remote"]
+VOLUME ["/root/remote"]
 
 CMD ["/root/docker-entrypoint.sh"]

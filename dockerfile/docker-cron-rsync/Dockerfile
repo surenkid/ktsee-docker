@@ -10,10 +10,10 @@ RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
   && echo "Asia/Shanghai" > /etc/timezone \
   && apk del tzdata
 
-# Install rsync
-RUN apk add --no-cache rsync
+# Install rsync and inotify-tools
+RUN apk add --no-cache rsync inotify-tools
 
-# Add coscmd script to crontab
+# Add sync script to crontab
 RUN echo "*       *       *       *       *       /usr/bin/flock -xn /root/cron-rsync.lock -c 'sh /root/cron-rsync.sh'" | tee -a /etc/crontabs/root
 
 # Add readiness prode script
@@ -23,5 +23,4 @@ RUN chmod +x /root/*.sh
 # Define mountable directories
 VOLUME ["/root/rsync", "/root/remote"]
 
-# Start cron
-CMD nohup sh -c 'crond -f && sh /root/inotify-rsync-push.sh'
+CMD ["/root/docker-entrypoint.sh"]

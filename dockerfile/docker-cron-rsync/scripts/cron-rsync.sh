@@ -6,7 +6,12 @@ remote_dir=/root/remote
 # === pull files from remote to local ===
 # check last pull and last push
 if [ ! -f /root/remote/last-part-push.ktsee ]; then
-    echo 9000000000000 > /root/remote/last-part-push.ktsee
+    # get current timestamp
+    cur_sec_and_ns=`date '+%s-%N'`
+    cur_sec=${cur_sec_and_ns%-*}
+    cur_ns=${cur_sec_and_ns##*-}
+    cur_timestamp=$((cur_sec*1000+cur_ns/1000000))
+    echo $cur_timestamp > /root/remote/last-part-push.ktsee
 fi
 if [ ! -f /root/last-full-pull.ktsee ]; then
     echo 0000000000000 > /root/last-full-pull.ktsee

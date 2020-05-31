@@ -38,7 +38,7 @@ if [ -f "/root/pre-push-file-list.ktsee" ]; then
     cur_sec=${cur_sec_and_ns%-*}
     cur_ns=${cur_sec_and_ns##*-}
     cur_timestamp=$((cur_sec*1000+cur_ns/1000000))
-    echo cur_timestamp > /root/remote/last-part-push.ktsee
+    echo $cur_timestamp > /root/remote/last-part-push.ktsee
 fi
 
 

@@ -21,7 +21,7 @@ if [ ! -f "/root/remote/last-part-push.ktsee" ] || [ ! -f "/root/last-full-pull.
 fi
 
 # === push files ===
-if [ -f "/root/push-file-list.ktsee" ]; then
+if [ -f "/root/pre-push-file-list.ktsee" ]; then
     # remove repeat line
     sort /root/pre-push-file-list.ktsee | uniq > /root/push-file-list.ktsee
     rm -rf /root/pre-push-file-list.ktsee

@@ -30,6 +30,10 @@ if [ -f /root/pre-push-file-list.ktsee ]; then
     # copy changed path
     while read path
     do
+        if [ ! -d $remote_dir$path ]; then
+            mkdir -p $remote_dir$path
+            chown -R 82:82 $remote_dir$path
+        fi
         rsync -avzupgo --exclude=*/ $local_dir$path $remote_dir$path >> /proc/self/fd/2
     done < /root/push-file-list.ktsee;
     rm -rf /root/push-file-list.ktsee

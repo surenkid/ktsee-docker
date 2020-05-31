@@ -20,6 +20,9 @@ RUN echo "*       *       *       *       *       /usr/bin/flock -xn /root/cron-
 COPY scripts/*.sh /root/
 RUN chmod +x /root/*.sh
 
+# Create rsync folder
+RUN mkdir -p /var/www/html
+
 # Define mountable directories
 VOLUME ["/root/rsync", "/root/remote"]
 

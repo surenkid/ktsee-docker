@@ -1,6 +1,7 @@
 #!/bin/sh
 local_dir=/var/www/html
 
+mkdir -p $local_dir/$1
 /usr/bin/inotifywait -mrq --format  '%Xe %w%f' -e modify,create,delete,attrib,close_write,move $local_dir/$1 | while read file         #把监控到有发生更改的"文件路径列表"循环
 do
         INO_EVENT=$(echo $file | awk '{print $1}')      # 把inotify输出切割 把事件类型部分赋值给INO_EVENT

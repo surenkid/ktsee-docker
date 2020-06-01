@@ -1,7 +1,10 @@
 #!/bin/sh
-crond
+if [ -z ${UPLOAD_SUB_FOLDER} ]; then
+  echo ${UPLOAD_SUB_FOLDER} > /root/upload-sub-folder.ktsee
+fi
+
 if [ -z $1 ]; then
-  sh /root/inotify-rsync-push.sh ${UPLOAD_SUB_FOLDER}
+  crond -f
 else
   $@
 fi

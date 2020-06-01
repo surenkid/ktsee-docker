@@ -25,20 +25,21 @@ if [ $remote_push_time -gt $local_pull_time ]; then
     # Pull code from remote partly
     echo "Pull files from $remote_dir/ to $local_dir/"
 
-    # if first-pull.ktsee exist, pull partly
-    if [ -f $remote_dir/first-pull.ktsee]; then
-        rsync -avzupgo $remote_dir/ $local_dir/ --exclude=last-part-push.ktsee --exclude=first-pull.ktsee >> /proc/self/fd/2   
+    # if init-pull.ktsee exist, pull partly
+    if [ -f /root/init-pull.ktsee]; then
+        rsync -avzupgo $remote_dir/ $local_dir/ --exclude=last-part-push.ktsee >> /proc/self/fd/2   
     else
         rsync -avzupgoI $remote_dir/ $local_dir/ --exclude=last-part-push.ktsee >> /proc/self/fd/2
-        touch $remote_dir/first-pull.ktsee
+        touch /root/init-pull.ktsee
+
+        # init inotify watch
+        nohup sh /root/inotify-rsync-push.sh & >> /proc/self/fd/2
+        touch /root/deploy.ktsee
     fi
 
     # update last pull time
     echo $cur_timestamp > /root/last-full-pull.ktsee
 
-    # init inotify watch
-    flock -xn /tmp/inotify-rsync-push.lock -c "nohup sh /root/inotify-rsync-push.sh &" >> /proc/self/fd/2
-    touch /root/deploy.ktsee
 else
     echo "No files need to pull"
 fi

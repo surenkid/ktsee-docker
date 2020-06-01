@@ -26,7 +26,7 @@ if [ $remote_push_time -gt $local_pull_time ]; then
     echo "Pull files from $remote_dir/ to $local_dir/"
 
     # if init-pull.ktsee exist, pull partly
-    if [ -f /root/init-pull.ktsee]; then
+    if [ -f /root/init-pull.ktsee ]; then
         rsync -avzupgo $remote_dir/ $local_dir/ --exclude=last-part-push.ktsee >> /proc/self/fd/2   
     else
         rsync -avzupgoI $remote_dir/ $local_dir/ --exclude=last-part-push.ktsee >> /proc/self/fd/2

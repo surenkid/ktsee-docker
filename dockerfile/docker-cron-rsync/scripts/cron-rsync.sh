@@ -33,7 +33,7 @@ if [ $remote_push_time -gt $local_pull_time ]; then
         touch /root/init-pull.ktsee
 
         # init inotify watch
-        nohup sh /root/inotify-rsync-push.sh & >> /proc/self/fd/2
+        sh /root/inotify-rsync-push.sh & >> /proc/self/fd/2
         touch /root/deploy.ktsee
     fi
 

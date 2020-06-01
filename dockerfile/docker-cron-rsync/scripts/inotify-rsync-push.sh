@@ -1,9 +1,10 @@
 #!/bin/sh
 local_dir=/var/www/html
+upload_sub_folder=`cat /root/upload-sub-folder.ktsee`
 
-mkdir -p $local_dir/$1
+mkdir -p $local_dir/$upload_sub_folder
 chown -R 82:82 $local_dir
-/usr/bin/inotifywait -mrq --format  '%Xe %w%f' -e modify,create,delete,attrib,close_write,move $local_dir/$1 | while read file         #把监控到有发生更改的"文件路径列表"循环
+/usr/bin/inotifywait -mrq --format  '%Xe %w%f' -e modify,create,delete,attrib,close_write,move $local_dir/$upload_sub_folder | while read file         #把监控到有发生更改的"文件路径列表"循环
 do
         INO_EVENT=$(echo $file | awk '{print $1}')      # 把inotify输出切割 把事件类型部分赋值给INO_EVENT
         INO_FILE=$(echo $file | awk '{print $2}')       # 把inotify输出切割 把文件路径部分赋值给INO_FILE

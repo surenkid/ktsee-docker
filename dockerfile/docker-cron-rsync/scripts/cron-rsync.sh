@@ -38,8 +38,7 @@ else
         echo $cur_timestamp > /root/last-full-pull.ktsee
 
         # init inotify watch
-        upload_sub_folder=`cat /root/upload-sub-folder.ktsee`
-        flock -xn /tmp/inotify-rsync-push.lock -c "nohup sh /root/inotify-rsync-push.sh $upload_sub_folder &" >> /proc/self/fd/2
+        flock -xn /tmp/inotify-rsync-push.lock -c "nohup sh /root/inotify-rsync-push.sh &" >> /proc/self/fd/2
         touch /root/deploy.ktsee
     fi
 fi

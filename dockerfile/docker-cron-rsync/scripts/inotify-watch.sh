@@ -1,13 +1,13 @@
 #!/bin/sh
 local_dir=/var/www/html
-upload_sub_folder=`cat /root/upload-sub-folder.ktsee`
+upload_sub_folder=`cat /root/inotify-watch-path.ktsee`
 
 if [ ! -d $local_dir/$upload_sub_folder ]; then
         mkdir -p $local_dir/$upload_sub_folder
         chown -R 82:82 $local_dir/$upload_sub_folder
 fi
 
-/usr/bin/inotifywait -mrqd -o /dev/null --format  '%Xe %w%f' -e modify,create,delete,attrib,close_write,move $local_dir/$upload_sub_folder | while read file         #把监控到有发生更改的"文件路径列表"循环
+/usr/bin/inotifywait -mrq --format  '%Xe %w%f' -e modify,create,delete,attrib,close_write,move $local_dir/$upload_sub_folder | while read file         #把监控到有发生更改的"文件路径列表"循环
 do
         INO_EVENT=$(echo $file | awk '{print $1}')      # 把inotify输出切割 把事件类型部分赋值给INO_EVENT
         INO_FILE=$(echo $file | awk '{print $2}')       # 把inotify输出切割 把文件路径部分赋值给INO_FILE
@@ -26,14 +26,14 @@ do
         then
                 echo 'CREATE or MODIFY or CLOSE_WRITE or MOVED_TO'
                 path=$(dirname ${INO_FILE})
-                echo ${path:${#local_dir}} >> /root/pre-push-file-list.ktsee
+                echo ${path:${#local_dir}} >> /root/pre-upload-file-list.ktsee
         fi
         #删除、移动出事件
         if [[ "$CHECK_DELETE" != "" ]] || [[ "$CHECK_MOVED_FROM" != "" ]]
         then
                 echo 'DELETE or MOVED_FROM'
                 path=$(dirname ${INO_FILE})
-                echo ${path:${#local_dir}} >> /root/pre-push-file-list.ktsee
+                echo ${path:${#local_dir}} >> /root/pre-upload-file-list.ktsee
         fi
         #修改属性事件 指 touch chgrp chmod chown等操作
         if [[ "$CHECK_ATTRIB" != "" ]]
@@ -43,7 +43,7 @@ do
                 then
                         echo 'ATTRIB FILE'
                         path=$(dirname ${INO_FILE})
-                        echo ${path:${#local_dir}} >> /root/pre-push-file-list.ktsee
+                        echo ${path:${#local_dir}} >> /root/pre-upload-file-list.ktsee
                 fi
         fi
 done

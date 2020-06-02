@@ -1,8 +1,8 @@
 #!/bin/sh
 if [ -z ${UPLOAD_SUB_FOLDER} ]; then
-  touch /root/upload-sub-folder.ktsee
+  touch /root/inotify-watch-path.ktsee
 else
-  echo ${UPLOAD_SUB_FOLDER} > /root/upload-sub-folder.ktsee
+  echo ${UPLOAD_SUB_FOLDER} > /root/inotify-watch-path.ktsee
 fi
 
 if [ -z $1 ]; then

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: openldap
+  namespace: development
+spec:
+  clusterIP: 192.168.253.49
+  ports:
+  - name: tcp-389-389
+    port: 389
+    protocol: TCP
+    targetPort: 389
+  selector:
+    k8s-app: openldap
+    qcloud-app: openldap
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

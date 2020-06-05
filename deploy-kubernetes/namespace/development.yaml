@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    description: 开发环境
+  name: development
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active

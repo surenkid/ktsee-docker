@@ -6,7 +6,7 @@ else
 fi
 
 if [ -z $1 ]; then
-  crond -f
+  exec crond -f
 else
   $@
 fi

@@ -57,6 +57,10 @@ if [ -f /root/pre-upload-file-list.ktsee ]; then
     while read path
     do
         echo "Upload files from $local_dir/$path/ to $remote_dir/$path/"
+        if [ ! -d $local_dir/$path ]; then
+                mkdir -p $local_dir/$path
+                chown -R 82:82 $local_dir/$path
+        fi
         rsync -avzupgo --exclude=*/ $local_dir/$path/ $remote_dir/$path/ >> /proc/self/fd/2
     done < /root/upload-file-list.ktsee;
     # rm -rf /root/upload-file-list.ktsee

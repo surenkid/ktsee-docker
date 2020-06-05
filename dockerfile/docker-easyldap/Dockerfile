@@ -14,7 +14,10 @@ RUN chmod +x /app/entrypoint.sh
 WORKDIR /app
 
 # install requirtments
-RUN pip install -r requirements.txt
+RUN apk --update add --virtual build-dependencies libffi-dev openssl-dev python-dev py-pip build-base \
+  && pip install --upgrade pip \
+  && pip install -r requirements.txt \
+  && apk del build-dependencies
 
 # Start cron
 CMD ["/app/entrypoint.sh"]

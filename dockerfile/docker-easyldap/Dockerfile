@@ -14,7 +14,7 @@ RUN chmod +x /app/entrypoint.sh
 WORKDIR /app
 
 # install requirtments
-RUN apk --update add --virtual build-dependencies gcc \
+RUN apk --update add --virtual build-dependencies libldap gcc libc-dev python-dev openldap-dev \
   && pip install --upgrade pip \
   && pip install -r requirements.txt \
   && apk del build-dependencies

@@ -1,0 +1,76 @@
+{% include "header.html" %}
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="header">
+								<h4 class="title">Create Security Object</h4>
+								<p class="category">All fields are required</p>
+                            </div>
+                            <div class="content">
+								<form action="/security" method="post">
+									<div class="row">
+										<div class="col-md-4">
+											<div class="form-group">
+												<label title="cn" for="form_cn">Username</label>
+												<input type="text" id="form_cn" name="cn" class="form-control" placeholder="admin" value="" required>
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+												<label title="sn" for="form_userPassword">Password</label>
+												<input type="password" id="form_userPassword" name="userPassword" class="form-control" value="" required>
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+												<label title="cn" for="form_description">Description</label>
+												<input type="text" id="form_description" name="description" class="form-control" placeholder="LDAP Administrator" value="" required>
+											</div>
+										</div>
+									</div>
+									<button type="submit" class="btn btn-warning btn-fill pull-right">Create</button>
+								</form>
+                            </div>
+                            <div class="content table-responsive table-full-width">
+								<div class="header">
+									<h4 class="title">Security Objects</h4>
+									<p class="category">All security objects</p>
+								</div>
+								<div class="content">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <th>Name</th>
+                                        <th>Path</th>
+                                        <th>Description</th>
+                                        <th>&nbsp;</th>
+                                    </thead>
+                                    <tbody>
+										{% for user in data %}
+                                        <tr>
+                                        	<td>{{ user[1].get('cn')[0] }}</td>
+                                        	<td>{{ user[0] }}</td>
+                                        	<td>{{ user[1].get('description')[0] }}</td>
+											<td><a href="/delete/{{ user[0] }}" class="btn btn-simple"><i class="pe-7s-trash"></i> delete</a></td>
+                                        </tr>
+										{% endfor %}
+                                    </tbody>
+                                </table>
+								</div>
+<div class="content">
+<h4 class="title">Debug</h4>
+<p class="category">This will be expandable eventually</p>
+<pre>
+{{ data | pprint }}
+</pre>
+</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% include "footer.html" %}

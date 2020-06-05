@@ -1,0 +1,105 @@
+{% include "header.html" %}
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="header">
+								<h4 class="title">Create User</h4>
+								<p class="category">All fields are required</p>
+                            </div>
+                            <div class="content">
+								<form action="/update" method="post">
+									<div class="row">
+										<div class="col-md-2">
+											<div class="form-group">
+												<label title="sn" for="form_sn">Last name</label>
+												<input type="text" id="form_sn" name="sn" class="form-control" placeholder="Last name" required>
+											</div>
+										</div>
+										<div class="col-md-2">
+											<div class="form-group">
+												<label title="givenName" for="form_givenName">First name</label>
+												<input type="text" id="form_givenName" name="givenName" class="form-control" placeholder="First name" required>
+											</div>
+										</div>
+										<div class="col-md-2">
+											<div class="form-group">
+												<label title="mail" for="form_mail">E-mail</label>
+												<input type="email" id="form_mail" name="mail" class="form-control" placeholder="E-mail" required>
+											</div>
+										</div>
+										<div class="col-md-2">
+											<div class="form-group">
+												<label title="userPassword" for="form_givenName">Password</label>
+												<input type="password" id="form_userPassword" name="userPassword" class="form-control" placeholder="Password" required>
+											</div>
+										</div>
+										<div class="col-md-2">
+											<div class="form-group">
+												<label title="orgUnit" for="form_orgUnit">Organisation</label>
+												<select id="form_orgUnit" name="orgUnit" class="form-control">
+													{% for org in data.orgs %}
+													<option value="{{ org[1].get('ou')[0] }}">{{ org[1].get('ou')[0] }}</option>
+													{% endfor %}
+												</select>
+											</div>
+										</div>
+										<div class="col-md-2">
+											<div class="form-group">
+												<label title="gidNumber" for="form_gidNumber">Group</label>
+												<select id="form_gidNumber" name="gidNumber" class="form-control">
+													{% for group in data.groups %}
+													<option value="{{ group[1].get('gidNumber')[0] }}">{{ group[1].get('cn')[0] }}</option>
+													{% endfor %}
+												</select>
+											</div>
+										</div>
+									</div>
+									<button type="submit" class="btn btn-warning btn-fill pull-right">Create</button>
+								</form>
+                            </div>
+                            <div class="content table-responsive table-full-width">
+								<div class="header">
+									<h4 class="title">Users</h4>
+									<p class="category">All Users</p>
+								</div>
+								<div class="content">
+                                <table class="table table-hover table-hover">
+                                    <thead>
+                                        <th>Name</th>
+                                        <th>User ID</th>
+                                        <th>Path</th>
+                                        <th>Email</th>
+                                        <th>User Number</th>
+                                        <th>&nbsp;</th>
+                                    </thead>
+                                    <tbody>
+										{% for user in data.users %}
+                                        <tr>
+                                        	<td><a href="/profile/?cn={{ user[1].get('cn')[0] }}">{{ user[1].get('sn')[0] }} {{ user[1].get('givenName')[0] }}</a></td>
+                                        	<td>{{ user[1].get('uid')[0] }}</td>
+                                        	<td>{{ user[0] }}</td>
+                                        	<td>{{ user[1].get('mail')[0] }}</td>
+                                        	<td>{{ user[1].get('uidNumber')[0] }}</td>
+											<td><a href="/delete/{{ user[0] }}" class="btn btn-simple"><i class="pe-7s-trash"></i> delete</a></td>
+                                        </tr>
+										{% endfor %}
+                                    </tbody>
+                                </table>
+								</div>
+<div class="content">
+<h4 class="title">Debug</h4>
+<p class="category">This will be expandable eventually</p>
+<pre>
+{{ data | pprint }}
+</pre>
+</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% include "footer.html" %}

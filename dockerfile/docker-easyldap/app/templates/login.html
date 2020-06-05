@@ -1,0 +1,65 @@
+{% include "header.html" %}
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="card">
+                            <div class="header">
+                                <h4 class="title">Login</h4>
+                            </div>
+                            <div class="content">
+								<form action="/login" method="post">
+									<div class="row">
+										<div class="col-md-4">
+											<div class="form-group">
+												<label title="username" for="form_base_dn">Base DN</label>
+												<input type="text" id="form_base_dn" name="base_dn" class="form-control" placeholder="dc=example,dc=com" value="dc=ktsee,dc=com" required>
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+												<label title="username" for="form_username">Username</label>
+												<input type="text" id="form_username" name="username" class="form-control" placeholder="admin" value="" required>
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+												<label title="sn" for="form_password">Password</label>
+												<input type="password" id="form_password" name="password" class="form-control" placeholder="Last name" value="" required>
+											</div>
+										</div>
+									</div>
+									<button type="submit" class="btn btn-warning btn-fill pull-right">Login</button>
+									<div class="clearfix"></div>
+								</div>
+							</form>
+						</div>
+
+                        <div class="card">
+                            <div class="header">
+                                <h4 class="title">Forgot Password?</h4>
+                            </div>
+                            <div class="content">
+								<form action="/recover" method="post">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label title="email" for="form_email">Email Address</label>
+												<input type="text" id="form_email" name="email" class="form-control" placeholder="user@example.com" value="" required>
+											</div>
+										</div>
+									</div>
+									<button type="submit" class="btn btn-fill pull-right">Send Recovery Email</button>
+									<div class="clearfix"></div>
+								</form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+{% include 'footer.html' %}

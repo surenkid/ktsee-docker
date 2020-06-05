@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<link rel="icon" type="image/png" href="/static/img/favicon.ico">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<title>Easy LDAP</title>
+	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/static/css/animate.min.css" rel="stylesheet"/>
+    <link href="/static/css/light-bootstrap-dashboard.css" rel="stylesheet"/>
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
+    <link href="/static/css/pe-icon-7-stroke.css" rel="stylesheet" />
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="sidebar" data-color="black" data-image="/static/img/sidebar-2.jpg">
+    	<div class="sidebar-wrapper">
+            <div class="logo">
+                <a href="/" class="simple-text">
+                    Easy LDAP
+                </a>
+            </div>
+
+            <ul class="nav">
+                <li class="active">
+                    <a href="/">
+                        <i class="pe-7s-user"></i>
+                        <p>Users</p>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="/groups">
+                        <i class="pe-7s-users"></i>
+                        <p>Groups</p>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="/ous">
+                        <i class="pe-7s-folder"></i>
+                        <p>Organisational Units</p>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="/security">
+                        <i class="pe-7s-key"></i>
+                        <p>Security</p>
+                    </a>
+                </li>
+            </ul>
+    	</div>
+    </div>
+
+    <div class="main-panel">
+        <nav class="navbar navbar-default navbar-fixed">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-example-2">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+				{% if session.base_dn %}
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">
+                                {{ session.base_dn }}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/security">
+                                {{ session.username }}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/logout">
+                                Log out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+				{% else %}
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/login">
+                                Log in
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+				{% endif %}
+            </div>
+        </nav>
+

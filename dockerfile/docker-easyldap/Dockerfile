@@ -6,8 +6,9 @@ LABEL maintainer="surenkids@gmail.com"
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # copy app files
+RUN mkdir /app
 COPY app/ /app/
-RUN chomod +x /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 # set workdir to app
 WORKDIR /app

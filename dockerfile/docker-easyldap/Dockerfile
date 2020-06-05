@@ -19,5 +19,8 @@ RUN apk --update add --virtual build-dependencies libldap gcc libc-dev python-de
   && pip install -r requirements.txt \
   && apk del build-dependencies
 
+# install openldap
+RUN apk add openldap
+
 # Start cron
 CMD ["/app/entrypoint.sh"]

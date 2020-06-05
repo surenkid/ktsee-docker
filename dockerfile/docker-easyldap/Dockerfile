@@ -14,7 +14,7 @@ RUN chmod +x /app/entrypoint.sh
 WORKDIR /app
 
 # install requirtments
-RUN apk --update add --virtual build-dependencies libffi-dev openssl-dev python-dev py-pip build-base \
+RUN apk --update add --virtual build-dependencies gcc \
   && pip install --upgrade pip \
   && pip install -r requirements.txt \
   && apk del build-dependencies

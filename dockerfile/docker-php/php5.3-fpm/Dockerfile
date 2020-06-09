@@ -117,7 +117,7 @@ RUN set -xe \
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-php-ext-* \
-  chmod +x /usr/local/bin/docker-php-entrypoint
+  && chmod +x /usr/local/bin/docker-php-entrypoint
 
 # download phpredis to php ext folder
 RUN cd /tmp \

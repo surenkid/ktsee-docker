@@ -159,7 +159,6 @@ RUN apk add -U --no-cache \
   libmcrypt-dev \
   freetype-dev \
   libpng-dev \
-	freetds-dev \
   && pecl install apc \
   && echo extension=apc.so > /usr/local/etc/php/conf.d/apc.ini \
   && pecl install memcached-2.2.0 \

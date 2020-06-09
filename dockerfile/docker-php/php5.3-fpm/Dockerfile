@@ -198,5 +198,9 @@ RUN { \
 # set yaf to name space mode
 RUN echo 'yaf.use_namespace = 1' | tee -a /usr/local/etc/php/conf.d/docker-php-ext-yaf.ini
 
+# set www-data to id 82
+RUN usermod -u 82 www-data \
+  && groupmod -g 82 www-data
+
 EXPOSE 9000
 CMD ["php-fpm"]

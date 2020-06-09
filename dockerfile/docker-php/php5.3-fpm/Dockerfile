@@ -62,6 +62,8 @@ RUN set -xe; \
 
 COPY docker-php-source /usr/local/bin/
 
+RUN chmod +x /usr/local/bin/docker-php-source
+
 RUN set -xe \
 	&& apk add --no-cache --virtual .build-deps \
 		$PHPIZE_DEPS \
@@ -113,6 +115,9 @@ RUN set -xe \
 	&& apk del .build-deps
 
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/docker-php-ext-* \
+  chmod +x /usr/local/bin/docker-php-entrypoint
 
 # download phpredis to php ext folder
 RUN cd /tmp \

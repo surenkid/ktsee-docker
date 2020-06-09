@@ -147,7 +147,6 @@ RUN apk add -U --no-cache \
   libmcrypt-dev \
   freetype-dev \
   libpng-dev \
-	freetds-dev \
   && pecl install apc \
   && echo extension=apc.so > /usr/local/etc/php/conf.d/apc.ini \
   && pecl install memcached-2.2.0 \
@@ -165,8 +164,6 @@ RUN apk add -U --no-cache \
   && docker-php-ext-install mcrypt \
   && docker-php-ext-install mbstring pdo pdo_mysql zip \
 	&& docker-php-ext-install iconv mysqli phpredis yaf \
-	&& docker-php-ext-configure mssql --with-mssql=/usr/local/freetds \
-  && docker-php-ext-install mssql \
   && apk del --purge autoconf alpine-sdk mariadb-dev openldap-dev \
   && apk add -U mariadb-client-libs libldap \
   && cd /usr/local/bin \

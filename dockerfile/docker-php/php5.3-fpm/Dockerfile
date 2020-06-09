@@ -134,7 +134,8 @@ RUN cd /tmp \
       && rm -rf /tmp/*
 
 # compile freetds for mssql
-RUN cd /tmp \
+RUN apk add --no-cache --virtual .freetds-deps gcc make g++ zlib-dev \
+      && cd /tmp \
       && curl -sL "ftp://ftp.gnome.org/mirror/ubuntu/pool/main/f/freetds/freetds_0.91.orig.tar.gz" -o freetds.tar.gz \
       && tar -xof freetds.tar.gz \
       && rm freetds.tar.gz* \
@@ -142,7 +143,8 @@ RUN cd /tmp \
       && ./configure --prefix=/usr/local/freetds --with-tdsver=7.1 --enable-msdblib --enable-dbmfix --with-gnu-ld --enable-shared --enable-static \
       && make && make install \
       && make clean \
-      && rm -rf /tmp/*
+      && rm -rf /tmp/* \
+	    && apk del .freetds-deps
 
 RUN apk add -U --no-cache \
   autoconf \
@@ -157,6 +159,7 @@ RUN apk add -U --no-cache \
   libmcrypt-dev \
   freetype-dev \
   libpng-dev \
+	freetds-dev \
   && pecl install apc \
   && echo extension=apc.so > /usr/local/etc/php/conf.d/apc.ini \
   && pecl install memcached-2.2.0 \

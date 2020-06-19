@@ -12,7 +12,7 @@ RUN apk add --no-cache supervisor \
       && wget --no-check-certificate -O /etc/supervisor.d/php-fpm.ini https://static.ktsee.com/s1/2019/11/28/5de08a0cc20a2.txt
 
 # Open control panel
-RUN sed -i 's/;port=127.0.0.1:9001/port=*:9001/g' /etc/supervisord.conf
+RUN sed -i 's/;port=127.0.0.1:9001/port=0.0.0.0:9001/g' /etc/supervisord.conf
 
 # Define mountable directories
 # VOLUME ["/etc/supervisor.d"]

@@ -32,10 +32,13 @@ if [ $remote_update_time -gt $local_update_time ]; then
         rsync -avzupgoI $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee >> /proc/self/fd/2
         touch /root/init.ktsee
 
-        # init inotify watch
-        sh /root/inotify-watch.sh &
-        # unlock cron lock
-        rm -rf /tmp/cron-rsync.lock
+        # do not use inotify-watch when no upload folder config
+        if [ -s /root/inotify-watch-path.ktsee ]; then
+            # init inotify watch
+            sh /root/inotify-watch.sh &
+            # unlock cron lock
+            rm -rf /tmp/cron-rsync.lock
+        fi
 
         touch /root/deploy.ktsee
     fi

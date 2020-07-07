@@ -23,7 +23,7 @@ services:
       - "./mysql:/var/lib/mysql"
       #- "./dbdump:/root"
     environment:
-      MYSQL_ROOT_PASSWORD: "surenkid"
+      MYSQL_ROOT_PASSWORD: "password"
 
   postgres:
     image: postgres:9.0.22

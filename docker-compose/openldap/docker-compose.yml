@@ -9,7 +9,7 @@ services:
       LDAP_ORGANISATION: "sumeils.com"
       LDAP_DOMAIN: "sumeils.com"
       LDAP_BASE_DN: "dc=sumeils,dc=com"
-      LDAP_ADMIN_PASSWORD: "sumei15b"
+      LDAP_ADMIN_PASSWORD: "password"
       #LDAP_CONFIG_PASSWORD: "config"
       LDAP_READONLY_USER: "true"
       LDAP_READONLY_USER_USERNAME: "readonly"

@@ -195,7 +195,7 @@ def profile():
 def changepassword(uid=False):
     session['base_dn'] = 'dc=sumeils,dc=com'
     session['username'] = 'admin'
-    session['password'] = 'sumei15b'
+    session['password'] = 'password'
     session['user_dn'] = "cn=%s,%s" % (session['username'], session['base_dn'])
     
     data = search(str("uid=%s" % uid))

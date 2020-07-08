@@ -17,7 +17,7 @@ COPY zend-loader-php5.6-linux-x86_64/files/ /usr/local/lib/php/extensions/no-deb
 RUN docker-php-ext-enable ZendGuardLoader opcache
 
 # Install extensions using docker-php-ext-install
-RUN docker-php-ext-install gd mysqli pdo_mysql zip mcrypt
+RUN docker-php-ext-install gd mysqli pdo_mysql zip mcrypt bcmath
 
 # Install REDIS, PDO_SQLSRV using pecl
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \

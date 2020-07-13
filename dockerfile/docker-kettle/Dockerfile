@@ -2,10 +2,10 @@ FROM openjdk:8u212-jre-alpine3.9
 LABEL maintainer="surenkids@gmail.com"
 
 # Init ENV
-ENV PENTAHO_VERSION 8.3 \
-    PENTAHO_TAG 8.3.0.0-371 \
-    MYSQL_CONNECTOR_VERSION 5.1.48 \
-    KETTLE_HOME /home/pentaho
+ENV PENTAHO_VERSION=8.3 \
+    PENTAHO_TAG=8.3.0.0-371 \
+    MYSQL_CONNECTOR_VERSION=5.1.48 \
+    KETTLE_HOME="/home/pentaho"
 
 RUN mkdir -p ${KETTLE_HOME}
 WORKDIR ${KETTLE_HOME}
@@ -27,4 +27,4 @@ EXPOSE 8282
 
 CMD ["${KETTLE_HOME}/data-integration/carte.sh", "0.0.0.0", "8282"]
 #EXPOSE 8080
-#ENTRYPOINT ["sh", "-c", "${PENTAHO_HOME}/scripts/run.sh"]
+#ENTRYPOINT ["sh", "-c", "${PENTAHO_HOME/scripts/run.sh"]

@@ -25,6 +25,6 @@ RUN wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${
 
 EXPOSE 8282
 
-CMD ["${KETTLE_HOME}/data-integration/carte.sh", "0.0.0.0", "8282"]
+CMD ["./data-integration/carte.sh", "0.0.0.0", "8282"]
 #EXPOSE 8080
 #ENTRYPOINT ["sh", "-c", "${PENTAHO_HOME/scripts/run.sh"]

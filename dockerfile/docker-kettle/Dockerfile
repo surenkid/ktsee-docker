@@ -7,6 +7,7 @@ ENV PENTAHO_VERSION 8.3 \
     MYSQL_CONNECTOR_VERSION 5.1.48 \
     KETTLE_HOME /home/pentaho
 
+RUN mkdir -p $KETTLE_HOME
 WORKDIR $KETTLE_HOME
 
 # Get and unpack pdi-ce

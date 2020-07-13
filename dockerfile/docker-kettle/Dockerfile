@@ -4,9 +4,9 @@ LABEL maintainer="surenkids@gmail.com"
 # Init ENV
 ENV PENTAHO_VERSION 8.3 \
     PENTAHO_TAG 8.3.0.0-371 \
-    MYSQL_CONNECTOR_VERSION 5.1.48 \
-    KETTLE_HOME /home/pentaho
+    MYSQL_CONNECTOR_VERSION 5.1.48
 
+ARG KETTLE_HOME=/home/pentaho
 RUN mkdir -p $KETTLE_HOME
 WORKDIR $KETTLE_HOME
 

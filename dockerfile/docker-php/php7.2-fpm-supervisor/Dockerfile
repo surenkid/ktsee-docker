@@ -7,7 +7,7 @@ LABEL maintainer="surenkids@gmail.com"
 
 # Install supervisor & config php-fpm startup config
 RUN apk add --no-cache supervisor \
-      && apk add --no-cache wget \
+      && apk add --no-cache wget bash \
       && mkdir /etc/supervisor.d \
       && wget --no-check-certificate -O /etc/supervisor.d/php-fpm.ini https://static.ktsee.com/s1/2019/11/28/5de08a0cc20a2.txt
 

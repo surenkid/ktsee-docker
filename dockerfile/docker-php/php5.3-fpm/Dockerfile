@@ -213,5 +213,10 @@ RUN set -ex \
 # set yaf to name space mode
 RUN echo 'yaf.use_namespace = 1' | tee -a /usr/local/etc/php/conf.d/docker-php-ext-yaf.ini
 
+# Change timezone to Asia/Shanghai
+RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && apk del tzdata
+
 EXPOSE 9000
 CMD ["php-fpm"]

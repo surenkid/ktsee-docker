@@ -23,6 +23,8 @@ RUN wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${
     && rm -R mysql-connector-java-${MYSQL_CONNECTOR_VERSION} \
     && rm mysql-connector-java-${MYSQL_CONNECTOR_VERSION}.zip
 
+RUN apk add --no-cache xauth
+
 EXPOSE 8282
 
 CMD ["./data-integration/carte.sh", "0.0.0.0", "8282"]

@@ -1,4 +1,4 @@
 #!/bin/sh
 echo 'starting...';
-php-fpm7 --daemonize
-nginx -g "daemon off;"
+cd /var/www/html
+php -S localhost:8000

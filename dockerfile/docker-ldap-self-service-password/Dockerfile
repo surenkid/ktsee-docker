@@ -1,4 +1,4 @@
-FROM alpine:3.12.0
+FROM alpine:3.8.5
 LABEL maintainer="surenkids@gmail.com"
 
 # Install packages

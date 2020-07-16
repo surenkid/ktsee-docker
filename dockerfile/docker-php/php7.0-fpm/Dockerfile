@@ -18,7 +18,7 @@ RUN docker-php-ext-install gd mysqli pdo_mysql zip mcrypt
 # Install REDIS, PDO_SQLSRV using pecl
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
       && pecl channel-update pecl.php.net \
-      && pecl install redis-5.1.1 sqlsrv-5.3.0 pdo_sqlsrv-5.3.0 \
+      && pecl install redis-5.3.1 sqlsrv-5.3.0 pdo_sqlsrv-5.3.0 \
       && docker-php-ext-enable redis sqlsrv pdo_sqlsrv \
       && apk del .build-deps
 

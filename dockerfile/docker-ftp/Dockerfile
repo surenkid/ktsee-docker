@@ -32,4 +32,12 @@ VOLUME /home
 
 EXPOSE 20 21 21100-21110
 
+# Change timezone to Asia/Shanghai
+RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && apk del tzdata
+
+# Add bash to alpine
+RUN apk add --no-cache bash
+
 CMD ["/docker-entrypoint.sh"]

@@ -10,6 +10,9 @@ RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
   && echo "Asia/Shanghai" > /etc/timezone \
   && apk del tzdata
 
+# Install mysql-clinet for mysqldump backup database
+RUN apk add --no-cache mysql-client bash
+
 # Install coscmd
 RUN pip install coscmd
 

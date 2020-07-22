@@ -1,5 +1,5 @@
 FROM alpine:3.11.6
-MAINTAINER https://github.com/surenkid/
+LABEL maintainer="surenkids@gmail.com"
 
 ENV MP4_VIDEO_DIR=/root/input \
     TS_VIDEO_DIR=/root/output \
@@ -20,5 +20,13 @@ RUN mkdir -p $MP4_VIDEO_DIR \
 COPY static/ /root/
 
 WORKDIR /root
+
+# Change timezone to Asia/Shanghai
+RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && apk del tzdata
+
+# Add bash to alpine
+RUN apk add --no-cache bash
 
 ENTRYPOINT ["bash","convert.sh"]

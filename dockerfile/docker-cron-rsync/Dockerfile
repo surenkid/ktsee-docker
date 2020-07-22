@@ -23,4 +23,12 @@ RUN chmod +x /root/*.sh
 # Define mountable directories
 VOLUME ["/root/remote"]
 
+# Change timezone to Asia/Shanghai
+RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && apk del tzdata
+
+# Add bash to alpine
+RUN apk add --no-cache bash
+
 CMD ["/root/docker-entrypoint.sh"]

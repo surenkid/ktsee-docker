@@ -22,5 +22,13 @@ RUN apk --update add --virtual build-dependencies libldap gcc libc-dev python-de
 # install openldap
 RUN apk add openldap
 
+# Change timezone to Asia/Shanghai
+RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && apk del tzdata
+
+# Add bash to alpine
+RUN apk add --no-cache bash
+
 # Start cron
 CMD ["/app/entrypoint.sh"]

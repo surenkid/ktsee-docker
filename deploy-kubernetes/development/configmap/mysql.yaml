@@ -8,7 +8,10 @@ data:
     # Apply this config only on the master.
     [mysqld]
     log-bin
+    skin-grant-tables
   slave.cnf: |
     # Apply this config only on slaves.
     [mysqld]
     super-read-only
+    skin-grant-tables
+  MYSQL_MASTER_PASS: "password"

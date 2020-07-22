@@ -1,0 +1,191 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  annotations:
+    description: web
+  labels:
+    k8s-app: web
+    qcloud-app: web
+  name: web
+  namespace: development
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: web
+      qcloud-app: web
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s-app: web
+        qcloud-app: web
+    spec:
+      containers:
+      - image: nginx:1.17.10-alpine
+        imagePullPolicy: IfNotPresent
+        name: nginx
+        resources:
+          limits:
+            cpu: 235m
+            memory: 353Mi
+          requests:
+            cpu: 225m
+            memory: 345Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/nginx
+          name: nfs
+          readOnly: true
+          subPath: nginx
+        - mountPath: /var/www/html
+          name: local-www
+      - image: surenkid/ktsee-php:5.3-fpm
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 1
+          periodSeconds: 3
+          successThreshold: 1
+          tcpSocket:
+            port: 9000
+          timeoutSeconds: 2
+        name: php53
+        resources:
+          limits:
+            cpu: 94m
+            memory: 141Mi
+          requests:
+            cpu: 90m
+            memory: 138Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /usr/local/etc/php
+          name: nfs
+          readOnly: true
+          subPath: php/53-php-conf
+        - mountPath: /usr/local/etc/php-fpm.d
+          name: nfs
+          readOnly: true
+          subPath: php/53-php-fpm
+        - mountPath: /var/www/html
+          name: local-www
+      - image: surenkid/ktsee-php:5.6-fpm
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 1
+          periodSeconds: 3
+          successThreshold: 1
+          tcpSocket:
+            port: 9000
+          timeoutSeconds: 2
+        name: php56
+        resources:
+          limits:
+            cpu: 188m
+            memory: 282Mi
+          requests:
+            cpu: 180m
+            memory: 276Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /usr/local/etc/php
+          name: nfs
+          readOnly: true
+          subPath: php/56-php-conf
+        - mountPath: /usr/local/etc/php-fpm.d
+          name: nfs
+          readOnly: true
+          subPath: php/56-php-fpm
+        - mountPath: /var/www/html
+          name: local-www
+      - image: surenkid/ktsee-php:7.2-fpm
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 1
+          periodSeconds: 3
+          successThreshold: 1
+          tcpSocket:
+            port: 9000
+          timeoutSeconds: 2
+        name: php72
+        resources:
+          limits:
+            cpu: 282m
+            memory: 423Mi
+          requests:
+            cpu: 270m
+            memory: 414Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /usr/local/etc/php
+          name: nfs
+          readOnly: true
+          subPath: php/72-php-conf
+        - mountPath: /usr/local/etc/php-fpm.d
+          name: nfs
+          readOnly: true
+          subPath: php/72-php-fpm
+        - mountPath: /var/www/html
+          name: local-www
+      - image: surenkid/ktsee-cron-rsync:latest
+        imagePullPolicy: Always
+        name: cron-sync
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - /root/readiness-probe.sh
+          failureThreshold: 1
+          periodSeconds: 3
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources:
+          limits:
+            cpu: 141m
+            memory: 211Mi
+          requests:
+            cpu: 135m
+            memory: 207Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /root/remote
+          name: nfs
+          subPath: web
+        - mountPath: /var/www/html
+          name: local-www
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: qcloudregistrykey
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: nfs
+        nfs:
+          path: /volumes
+          server: 10.10.4.4
+      - emptyDir: {}
+        name: local-www

@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-master
+  namespace: development
+  labels:
+    k8s-app: mysql-master
+    qcloud-app: mysql-master
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: mysql-master
+      qcloud-app: mysql-master
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8s-app: mysql-master
+        qcloud-app: mysql-master
+    spec:
+      initContainers:
+      - name: init-mysql
+        image: mysql:5.7.18
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          echo [mysqld] > /mnt/conf.d/server-id.cnf
+          echo server-id=100 >> /mnt/conf.d/server-id.cnf
+          cp /mnt/config-map/master.cnf /mnt/conf.d/
+        volumeMounts:
+        - name: conf
+          mountPath: /mnt/conf.d
+        - name: config-map
+          mountPath: /mnt/config-map
+      containers:
+      - name: mysql
+        image: mysql:5.7.18
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: MYSQL_MASTER_PASS
+              name: mysql
+              optional: false
+        ports:
+        - name: mysql
+          containerPort: 3306
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: conf
+          mountPath: /etc/mysql/conf.d
+        resources:
+          limits:
+            cpu: 846m
+            memory: 1269Mi
+          requests:
+            cpu: 810m
+            memory: 1242Mi
+        livenessProbe: # 存活检查
+          exec:
+            command:
+            - bash 
+            - "-c" 
+            - | 
+              mysqladmin ping -uroot -p$MYSQL_ROOT_PASSWORD -h 127.0.0.1
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe: # 可服务检查
+          exec:
+            # Check we can execute queries over TCP (skip-networking is off).
+            command:
+            - bash 
+            - "-c" 
+            - | 
+              mysql -uroot -p$MYSQL_ROOT_PASSWORD -h 127.0.0.1 -e 'SELECT 1'
+          initialDelaySeconds: 5
+          periodSeconds: 3
+          timeoutSeconds: 2
+      # xtrabackup 在3307端口提供备份服务, 如果是slave节点，通知mysqld以slave模式启动
+      - name: xtrabackup
+        image: surenkid/gcr-xtrabackup:1.0
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: MYSQL_MASTER_PASS
+              name: mysql
+              optional: false
+        ports:
+        - name: xtrabackup
+          containerPort: 3307
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          cd /var/lib/mysql
+          # 在3307端口上为其他pods提供克隆服务, ncat成为0号主进程
+          exec ncat --listen --keep-open --send-only --max-conns=1 3307 -c \
+            "xtrabackup --backup --slave-info --stream=xbstream --host=127.0.0.1 --user=root --password=${MYSQL_ROOT_PASSWORD}"
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: conf
+          mountPath: /etc/mysql/conf.d
+        resources:
+          limits:
+            cpu: 94m
+            memory: 141Mi
+          requests:
+            cpu: 90m
+            memory: 138Mi
+      volumes:
+      - name: conf
+        emptyDir: {}
+      - name: config-map
+        configMap:
+          name: mysql
+      - name: data
+        qcloudCbs:
+          cbsDiskId: disk-4l2qshv2
+          fsType: ext4

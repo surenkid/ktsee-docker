@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: development
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: tcp-80-80
+    nodePort: 30080
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: tcp-443-443
+    nodePort: 30443
+    port: 443
+    protocol: TCP
+    targetPort: 443
+  selector:
+    k8s-app: nginx
+    qcloud-app: nginx
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}

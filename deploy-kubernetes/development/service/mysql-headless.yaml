@@ -11,8 +11,8 @@ spec:
     protocol: TCP
     targetPort: 3306
   selector:
-    k8s-app: mysql
-    qcloud-app: mysql
+    k8s-app: mysql-slave
+    qcloud-app: mysql-slave
   sessionAffinity: None
   type: ClusterIP
 status:

@@ -1,0 +1,206 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-slave
+  namespace: development
+  labels:
+    k8s-app: mysql-slave
+    qcloud-app: mysql-slave
+spec:
+  selector:
+    matchLabels:
+      k8s-app: mysql-slave
+      qcloud-app: mysql-slave
+  #声明它属于哪个Headless Service
+  serviceName: mysql-headless
+  # 2个副本，在这里是两从
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        k8s-app: mysql-slave
+        qcloud-app: mysql-slave
+    spec:
+      initContainers:
+      # init-mysql 用于给 mysql 容器按主从身份给对应的配置文件
+      - name: init-mysql
+        image: mysql:5.7.18
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          # 按pod启动顺序ID，生成server-id
+          [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
+          ordinal=${BASH_REMATCH[1]}
+          echo [mysqld] > /mnt/conf.d/server-id.cnf
+          # Add an offset to avoid reserved server-id=0 value.
+          echo server-id=$((101 + $ordinal)) >> /mnt/conf.d/server-id.cnf
+          # Copy appropriate conf.d files from config-map to emptyDir.
+          # 不建立主库，直接建立从库
+          cp /mnt/config-map/slave.cnf /mnt/conf.d/
+        volumeMounts:
+        - name: data
+          mountPath: /mnt/conf.d
+          subPath: conf
+        - name: config-map
+          mountPath: /mnt/config-map
+      # clone-mysql 的目的是让 Slave在初始化的时候从上一个Pod复制数据
+      # 还有一个 xtrabackup 容器在3307端口提供了备份服务
+      - name: clone-mysql
+        image: surenkid/gcr-xtrabackup:1.0
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          # 如果已经有初始数据，如：之前启动过，就跳过克隆，走mysql的内部同步机制
+          [[ -d /var/lib/mysql/mysql ]] && exit 0
+          # 如果是Master就跳过这个克隆过程
+          [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
+          ordinal=${BASH_REMATCH[1]}
+          if [[ $ordinal -eq 0 ]]; then
+            # 从主库的xtrabackup服务克隆数据
+            ncat --recv-only mysql-master 3307 | xbstream -x -C /var/lib/mysql
+          else
+            # 从上一个Pod的xtrabackup服务克隆数据
+            ncat --recv-only mysql-slave-$(($ordinal-1)).mysql-headless 3307 | xbstream -x -C /var/lib/mysql
+          fi
+          # Prepare the backup.
+          xtrabackup --prepare --target-dir=/var/lib/mysql
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          # 用subPath是为了避免pvc根目录下面存在文件或者目录, 影响mysql启动, subPath不存在时会自动创建
+          subPath: mysql
+        - name: data
+          mountPath: /etc/mysql/conf.d
+          subPath: conf
+      containers:
+      - name: mysql
+        image: mysql:5.7.18
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: MYSQL_MASTER_PASS
+              name: mysql
+              optional: false
+        ports:
+        - name: mysql
+          containerPort: 3306
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: data
+          mountPath: /etc/mysql/conf.d
+          subPath: conf
+        resources:
+          limits:
+            cpu: 846m
+            memory: 1269Mi
+          requests:
+            cpu: 810m
+            memory: 1242Mi
+        livenessProbe: # 存活检查
+          exec:
+            command:
+            - bash 
+            - "-c" 
+            - | 
+              mysqladmin ping -uroot -p$MYSQL_ROOT_PASSWORD -h 127.0.0.1
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe: # 可服务检查
+          exec:
+            # Check we can execute queries over TCP (skip-networking is off).
+            command:
+            - bash 
+            - "-c" 
+            - | 
+              mysql -uroot -p$MYSQL_ROOT_PASSWORD -h 127.0.0.1 -e 'SELECT 1'
+          initialDelaySeconds: 5
+          periodSeconds: 3
+          timeoutSeconds: 2
+      # xtrabackup 在3307端口提供备份服务, 如果是slave节点，通知mysqld以slave模式启动
+      - name: xtrabackup
+        image: surenkid/gcr-xtrabackup:1.0
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: MYSQL_MASTER_PASS
+              name: mysql
+              optional: false
+        ports:
+        - name: xtrabackup
+          containerPort: 3307
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          cd /var/lib/mysql
+          # Determine binlog position of cloned data, if any.
+          if [[ -f xtrabackup_slave_info ]]; then
+            # 正在从Slave克隆
+            mv xtrabackup_slave_info change_master_to.sql.in
+            # 删除没用的xtrabackup_binlog_info
+            rm -f xtrabackup_binlog_info
+          elif [[ -f xtrabackup_binlog_info ]]; then
+            # 正在从Master克隆. 解析 binlog 的位置.
+            [[ `cat xtrabackup_binlog_info` =~ ^(.*?)[[:space:]]+(.*?)$ ]] || exit 1
+            # xtrabackup_binlog_info的格式: binlog文件名 binlog_pos
+            rm xtrabackup_binlog_info
+            echo "CHANGE MASTER TO MASTER_LOG_FILE='${BASH_REMATCH[1]}',\
+                  MASTER_LOG_POS=${BASH_REMATCH[2]}" > change_master_to.sql.in
+          fi
+          # Check if we need to complete a clone by starting replication.
+          if [[ -f change_master_to.sql.in ]]; then
+            # 等待同Pod的mysql容器启动
+            echo "Waiting for mysqld to be ready (accepting connections)"
+            until mysql -uroot -p${MYSQL_ROOT_PASSWORD} -h 127.0.0.1 -e "SELECT 1"; do sleep 1; done
+            echo "Initializing replication from clone position"
+            # 改名change_master_to.sql.in, 避免重启的时候又执行了一次
+            mv change_master_to.sql.in change_master_to.sql.orig
+            # 连接到本pod的mysql服务, 切换为slave模式
+            # sql: CHANGE MASTER TO MASTER_LOG_FILE='binlog文件名', MASTER_LOG_POS=binlog位置,
+            #      MASTER_HOST='mysql-0.mysql-headless',
+            #      MASTER_USER='root',
+            #      MASTER_PASSWORD='',
+            #      MASTER_CONNECT_RETRY=10;
+            # sql: START SLAVE;
+            mysql -uroot -p${MYSQL_ROOT_PASSWORD} -h 127.0.0.1 <<EOF
+          $(<change_master_to.sql.orig),
+            MASTER_HOST='mysql-master',
+            MASTER_USER='root',
+            MASTER_PASSWORD='${MYSQL_ROOT_PASSWORD}',
+            MASTER_CONNECT_RETRY=10;
+          START SLAVE;
+          EOF
+          fi
+          # 在3307端口上为其他pods提供克隆服务, ncat成为0号主进程
+          exec ncat --listen --keep-open --send-only --max-conns=1 3307 -c \
+            "xtrabackup --backup --slave-info --stream=xbstream --host=127.0.0.1 --user=root --password=${MYSQL_ROOT_PASSWORD}"
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        - name: data
+          mountPath: /etc/mysql/conf.d
+          subPath: conf
+        resources:
+          limits:
+            cpu: 94m
+            memory: 141Mi
+          requests:
+            cpu: 90m
+            memory: 138Mi
+      volumes:
+      - name: data
+        emptyDir: {}
+      - name: config-map
+        configMap:
+          name: mysql

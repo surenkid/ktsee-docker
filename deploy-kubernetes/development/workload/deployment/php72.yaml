@@ -1,0 +1,73 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: php72
+    qcloud-app: php72
+  name: php72
+  namespace: development
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 0
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: php72
+      qcloud-app: php72
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s-app: php72
+        qcloud-app: php72
+    spec:
+      containers:
+      - image: surenkid/ktsee-php:7.2-fpm
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: 9000
+          timeoutSeconds: 1
+        name: php72
+        resources:
+          limits:
+            cpu: 235m
+            memory: 352Mi
+          requests:
+            cpu: 225m
+            memory: 345Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /usr/local/etc/php
+          name: nfs
+          readOnly: true
+          subPath: php/72-php-conf
+        - mountPath: /usr/local/etc/php-fpm.d
+          name: nfs
+          readOnly: true
+          subPath: php/72-php-fpm
+        - mountPath: /var/www/html
+          name: nfs
+          readOnly: true
+          subPath: web
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: nfs
+        nfs:
+          path: /volumes
+          server: 10.10.4.4

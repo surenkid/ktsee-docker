@@ -1,0 +1,148 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  generation: 1
+  labels:
+    k8s-app: mindoc
+    qcloud-app: mindoc
+  name: mindoc
+  namespace: development
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: mindoc
+      qcloud-app: mindoc
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s-app: mindoc
+        qcloud-app: mindoc
+    spec:
+      containers:
+      - env:
+        - name: MINDOC_RUN_MODE
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_RUN_MODE
+              name: mindoc
+              optional: false
+        - name: MINDOC_DB_ADAPTER
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_DB_ADAPTER
+              name: mindoc
+              optional: false
+        - name: MINDOC_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_DB_HOST
+              name: mindoc
+              optional: false
+        - name: MINDOC_DB_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_DB_DATABASE
+              name: mindoc
+              optional: false
+        - name: MINDOC_DB_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_DB_USERNAME
+              name: mindoc
+              optional: false
+        - name: MINDOC_DB_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_DB_PASSWORD
+              name: mindoc
+              optional: false
+        - name: MINDOC_CACHE
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_CACHE
+              name: mindoc
+              optional: false
+        - name: MINDOC_LDAP_ENABLE
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_LDAP_ENABLE
+              name: mindoc
+              optional: false
+        - name: MINDOC_LDAP_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_LDAP_HOST
+              name: mindoc
+              optional: false
+        - name: MINDOC_LDAP_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_LDAP_PORT
+              name: mindoc
+              optional: false
+        - name: MINDOC_LDAP_ATTRIBUTE
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_LDAP_ATTRIBUTE
+              name: mindoc
+              optional: false
+        - name: MINDOC_LDAP_BASE
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_LDAP_BASE
+              name: mindoc
+              optional: false
+        - name: MINDOC_LDAP_USER
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_LDAP_USER
+              name: mindoc
+              optional: false
+        - name: MINDOC_LDAP_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: MINDOC_LDAP_PASSWORD
+              name: mindoc
+              optional: false
+        image: surenkid/mindoc:2.0
+        imagePullPolicy: IfNotPresent
+        name: mindoc
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /mindoc/conf
+          name: nfs
+          subPath: conf
+        - mountPath: /mindoc/uploads
+          name: nfs
+          subPath: uploads
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: nfs
+        nfs:
+          path: /volumes/mindoc
+          server: 10.10.4.4

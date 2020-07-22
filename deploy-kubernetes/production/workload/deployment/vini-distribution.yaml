@@ -1,0 +1,140 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  annotations:
+    description: vini-distribution
+  labels:
+    k8s-app: vini-distribution
+    qcloud-app: vini-distribution
+  name: vini-distribution
+  namespace: production
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: vini-distribution
+      qcloud-app: vini-distribution
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s-app: vini-distribution
+        qcloud-app: vini-distribution
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: qcloud-app
+                operator: In
+                values:
+                - vini-distribution
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - image: nginx:1.17.10-alpine
+        imagePullPolicy: IfNotPresent
+        name: nginx
+        resources:
+          limits:
+            cpu: 329m
+            memory: 493.5Mi
+          requests:
+            cpu: 315m
+            memory: 483Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/nginx
+          name: nfs
+          readOnly: true
+          subPath: nginx
+        - mountPath: /var/www/html
+          name: local-www
+      - image: surenkid/ktsee-php:7.2-fpm
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 1
+          periodSeconds: 3
+          successThreshold: 1
+          tcpSocket:
+            port: 9000
+          timeoutSeconds: 2
+        name: php72
+        resources:
+          limits:
+            cpu: 470m
+            memory: 705Mi
+          requests:
+            cpu: 450m
+            memory: 690Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /usr/local/etc/php
+          name: nfs
+          readOnly: true
+          subPath: php
+        - mountPath: /usr/local/etc/php-fpm.d
+          name: nfs
+          readOnly: true
+          subPath: php-fpm.d
+        - mountPath: /var/www/html
+          name: local-www
+      - env:
+        - name: UPLOAD_SUB_FOLDER
+          value: 
+        image: surenkid/ktsee-cron-rsync:latest
+        imagePullPolicy: Always
+        name: cron-sync
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - /root/readiness-probe.sh
+          failureThreshold: 1
+          periodSeconds: 3
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources:
+          limits:
+            cpu: 141m
+            memory: 211.5Mi
+          requests:
+            cpu: 135m
+            memory: 207Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /root/remote
+          name: nfs
+          subPath: web
+        - mountPath: /var/www/html
+          name: local-www
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: qcloudregistrykey
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: nfs
+        nfs:
+          path: /volumes/app/vini-dist.sumeils.com
+          server: 10.10.3.4
+      - emptyDir: {}
+        name: local-www

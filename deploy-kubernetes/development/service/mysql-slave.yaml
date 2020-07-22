@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-slave
+  namespace: development
+spec:
+  ports:
+  - name: 3306-3306-tcp
+    port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    k8s-app: mysql-slave
+    qcloud-app: mysql-slave
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}

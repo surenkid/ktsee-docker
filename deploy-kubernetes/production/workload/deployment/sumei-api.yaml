@@ -37,18 +37,18 @@ spec:
                 operator: In
                 values:
                 - sumei-api
-            topologyKey: "kubernetes.io/hostname"
+            topologyKey: kubernetes.io/hostname
       containers:
       - image: nginx:1.17.10-alpine
         imagePullPolicy: IfNotPresent
         name: nginx
         resources:
           limits:
-            cpu: 329m
-            memory: 493.5Mi
+            cpu: 141m
+            memory: 212Mi
           requests:
-            cpu: 315m
-            memory: 483Mi
+            cpu: 135m
+            memory: 207Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -72,11 +72,11 @@ spec:
         name: php72
         resources:
           limits:
-            cpu: 470m
-            memory: 705Mi
+            cpu: 705m
+            memory: 1058Mi
           requests:
-            cpu: 450m
-            memory: 690Mi
+            cpu: 675m
+            memory: 1035Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -109,11 +109,11 @@ spec:
           timeoutSeconds: 2
         resources:
           limits:
-            cpu: 141m
-            memory: 211.5Mi
+            cpu: 94m
+            memory: 141Mi
           requests:
-            cpu: 135m
-            memory: 207Mi
+            cpu: 90m
+            memory: 138Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log

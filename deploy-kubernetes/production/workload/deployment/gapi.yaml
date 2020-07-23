@@ -28,27 +28,17 @@ spec:
         k8s-app: global-api
         qcloud-app: global-api
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: qcloud-app
-                operator: In
-                values:
-                - global-api
-            topologyKey: "kubernetes.io/hostname"
       containers:
       - image: nginx:1.17.10-alpine
         imagePullPolicy: IfNotPresent
         name: nginx
         resources:
           limits:
-            cpu: 320m
-            memory: 470Mi
+            cpu: 141m
+            memory: 212Mi
           requests:
-            cpu: 300m
-            memory: 460Mi
+            cpu: 135m
+            memory: 207Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -58,6 +48,31 @@ spec:
           name: nfs
           readOnly: true
           subPath: nginx
+        - mountPath: /var/www/html
+          name: local-www
+      - image: surenkid/ktsee-php:5.3-fpm
+        imagePullPolicy: IfNotPresent
+        name: php53
+        resources:
+          limits:
+            cpu: 705m
+            memory: 1058Mi
+          requests:
+            cpu: 675m
+            memory: 1035Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /usr/local/etc/php
+          name: nfs
+          readOnly: true
+          subPath: php
+        - mountPath: /usr/local/etc/php-fpm.d
+          name: nfs
+          readOnly: true
+          subPath: php-fpm.d
         - mountPath: /var/www/html
           name: local-www
       - image: surenkid/ktsee-cron-rsync:latest
@@ -74,11 +89,11 @@ spec:
           timeoutSeconds: 2
         resources:
           limits:
-            cpu: 150m
-            memory: 235Mi
+            cpu: 94m
+            memory: 141Mi
           requests:
-            cpu: 150m
-            memory: 230Mi
+            cpu: 90m
+            memory: 138Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -87,31 +102,6 @@ spec:
         - mountPath: /root/remote
           name: nfs
           subPath: web
-        - mountPath: /var/www/html
-          name: local-www
-      - image: surenkid/ktsee-php:5.3-fpm
-        imagePullPolicy: IfNotPresent
-        name: php53
-        resources:
-          limits:
-            cpu: 470m
-            memory: 705Mi
-          requests:
-            cpu: 450m
-            memory: 690Mi
-        securityContext:
-          privileged: false
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        volumeMounts:
-        - mountPath: /usr/local/etc/php
-          name: nfs
-          readOnly: true
-          subPath: php
-        - mountPath: /usr/local/etc/php-fpm.d
-          name: nfs
-          readOnly: true
-          subPath: php-fpm.d
         - mountPath: /var/www/html
           name: local-www
       dnsPolicy: ClusterFirst

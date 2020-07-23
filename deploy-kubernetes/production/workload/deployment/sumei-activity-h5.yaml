@@ -37,18 +37,18 @@ spec:
                 operator: In
                 values:
                 - sumei-activity-h5
-            topologyKey: "kubernetes.io/hostname"
+            topologyKey: kubernetes.io/hostname
       containers:
       - image: nginx:1.17.10-alpine
         imagePullPolicy: IfNotPresent
         name: nginx
         resources:
           limits:
-            cpu: 329m
-            memory: 493.5Mi
+            cpu: 376m
+            memory: 564Mi
           requests:
-            cpu: 315m
-            memory: 483Mi
+            cpu: 360m
+            memory: 552Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -62,7 +62,6 @@ spec:
           name: local-www
       - env:
         - name: UPLOAD_SUB_FOLDER
-          value: 
         image: surenkid/ktsee-cron-rsync:latest
         imagePullPolicy: Always
         name: cron-sync
@@ -77,11 +76,11 @@ spec:
           timeoutSeconds: 2
         resources:
           limits:
-            cpu: 141m
-            memory: 211.5Mi
+            cpu: 94m
+            memory: 141Mi
           requests:
-            cpu: 135m
-            memory: 207Mi
+            cpu: 90m
+            memory: 138Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log

@@ -2,11 +2,11 @@ apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
   annotations:
-    description: vini-distribution
+    description: truly-mall
   labels:
-    k8s-app: vini-distribution
-    qcloud-app: vini-distribution
-  name: vini-distribution
+    k8s-app: truly-mall
+    qcloud-app: truly-mall
+  name: truly-mall
   namespace: production
 spec:
   progressDeadlineSeconds: 600
@@ -14,19 +14,19 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      k8s-app: vini-distribution
-      qcloud-app: vini-distribution
+      k8s-app: truly-mall
+      qcloud-app: truly-mall
   strategy:
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
+      maxSurge: 0
+      maxUnavailable: 1
     type: RollingUpdate
   template:
     metadata:
       creationTimestamp: null
       labels:
-        k8s-app: vini-distribution
-        qcloud-app: vini-distribution
+        k8s-app: truly-mall
+        qcloud-app: truly-mall
     spec:
       affinity:
         podAntiAffinity:
@@ -36,7 +36,7 @@ spec:
               - key: qcloud-app
                 operator: In
                 values:
-                - vini-distribution
+                - truly-mall
             topologyKey: "kubernetes.io/hostname"
       containers:
       - image: nginx:1.17.10-alpine
@@ -60,8 +60,8 @@ spec:
           subPath: nginx
         - mountPath: /var/www/html
           name: local-www
-      - image: surenkid/ktsee-php:7.2-fpm
-        imagePullPolicy: IfNotPresent
+      - image: surenkid/ktsee-php:5.6-fpm
+        imagePullPolicy: Always
         livenessProbe:
           failureThreshold: 1
           periodSeconds: 3
@@ -69,7 +69,7 @@ spec:
           tcpSocket:
             port: 9000
           timeoutSeconds: 2
-        name: php72
+        name: php56
         resources:
           limits:
             cpu: 705m
@@ -94,7 +94,7 @@ spec:
           name: local-www
       - env:
         - name: UPLOAD_SUB_FOLDER
-          value: 
+          value: upload
         image: surenkid/ktsee-cron-rsync:latest
         imagePullPolicy: Always
         name: cron-sync
@@ -134,7 +134,7 @@ spec:
       volumes:
       - name: nfs
         nfs:
-          path: /volumes/app/vini-dist.sumeils.com
+          path: /volumes/app/truly-mall.sumeils.com
           server: 10.10.3.4
       - emptyDir: {}
         name: local-www

@@ -1,12 +1,10 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  annotations:
-    description: vini-distribution
   labels:
-    k8s-app: vini-distribution
-    qcloud-app: vini-distribution
-  name: vini-distribution
+    k8s-app: website-itruly
+    qcloud-app: website-itruly
+  name: website-itruly
   namespace: production
 spec:
   progressDeadlineSeconds: 600
@@ -14,8 +12,8 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      k8s-app: vini-distribution
-      qcloud-app: vini-distribution
+      k8s-app: website-itruly
+      qcloud-app: website-itruly
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -23,10 +21,9 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        k8s-app: vini-distribution
-        qcloud-app: vini-distribution
+        k8s-app: website-itruly
+        qcloud-app: website-itruly
     spec:
       affinity:
         podAntiAffinity:
@@ -36,19 +33,19 @@ spec:
               - key: qcloud-app
                 operator: In
                 values:
-                - vini-distribution
-            topologyKey: "kubernetes.io/hostname"
+                - website-itruly
+            topologyKey: kubernetes.io/hostname
       containers:
       - image: nginx:1.17.10-alpine
         imagePullPolicy: IfNotPresent
         name: nginx
         resources:
           limits:
-            cpu: 141m
-            memory: 212Mi
+            cpu: 188m
+            memory: 282Mi
           requests:
-            cpu: 135m
-            memory: 207Mi
+            cpu: 180m
+            memory: 276Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -62,21 +59,14 @@ spec:
           name: local-www
       - image: surenkid/ktsee-php:7.2-fpm
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          failureThreshold: 1
-          periodSeconds: 3
-          successThreshold: 1
-          tcpSocket:
-            port: 9000
-          timeoutSeconds: 2
         name: php72
         resources:
           limits:
-            cpu: 705m
-            memory: 1058Mi
+            cpu: 188m
+            memory: 282Mi
           requests:
-            cpu: 675m
-            memory: 1035Mi
+            cpu: 180m
+            memory: 276Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -92,10 +82,7 @@ spec:
           subPath: php-fpm.d
         - mountPath: /var/www/html
           name: local-www
-      - env:
-        - name: UPLOAD_SUB_FOLDER
-          value: 
-        image: surenkid/ktsee-cron-rsync:latest
+      - image: surenkid/ktsee-cron-rsync:latest
         imagePullPolicy: Always
         name: cron-sync
         readinessProbe:
@@ -134,7 +121,7 @@ spec:
       volumes:
       - name: nfs
         nfs:
-          path: /volumes/app/vini-dist.sumeils.com
+          path: /volumes/app/www.itruly.cn
           server: 10.10.3.4
       - emptyDir: {}
         name: local-www

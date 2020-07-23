@@ -24,7 +24,6 @@ spec:
       labels:
         k8s-app: php72-supervisor
         qcloud-app: php72-supervisor
-        qcloud-redeploy-timestamp: "1594625200160"
     spec:
       containers:
       - image: surenkid/ktsee-php:7.2-fpm-supervisor

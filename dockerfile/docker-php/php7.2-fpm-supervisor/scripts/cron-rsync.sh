@@ -27,7 +27,7 @@ if [ $remote_update_time -gt $local_update_time ]; then
 
     # if init.ktsee exist, pull partly
     if [ -f /root/deploy.ktsee ]; then
-        rsync -avzupgo $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee >> /proc/self/fd/2   
+        rsync -avzupgo $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee --exclude-from='/root/remote/rsync-exclude-list.txt' >> /proc/self/fd/2   
     else
         rsync -avzupgoI $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee >> /proc/self/fd/2
         touch /root/deploy.ktsee

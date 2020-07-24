@@ -41,11 +41,11 @@ spec:
         name: nginx
         resources:
           limits:
-            cpu: 188m
-            memory: 282Mi
+            cpu: 376m
+            memory: 564Mi
           requests:
-            cpu: 180m
-            memory: 276Mi
+            cpu: 360m
+            memory: 552Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -55,31 +55,6 @@ spec:
           name: nfs
           readOnly: true
           subPath: nginx
-        - mountPath: /var/www/html
-          name: local-www
-      - image: surenkid/ktsee-php:7.2-fpm
-        imagePullPolicy: IfNotPresent
-        name: php72
-        resources:
-          limits:
-            cpu: 188m
-            memory: 282Mi
-          requests:
-            cpu: 180m
-            memory: 276Mi
-        securityContext:
-          privileged: false
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        volumeMounts:
-        - mountPath: /usr/local/etc/php
-          name: nfs
-          readOnly: true
-          subPath: php
-        - mountPath: /usr/local/etc/php-fpm.d
-          name: nfs
-          readOnly: true
-          subPath: php-fpm.d
         - mountPath: /var/www/html
           name: local-www
       - image: surenkid/ktsee-cron-rsync:latest

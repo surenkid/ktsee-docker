@@ -20,7 +20,7 @@ RUN apk add --no-cache bash openssh \
     && echo "root:${SSH_PASSWORD}" | chpasswd
 
 RUN addgroup -g 82 -S www-data \
-    && adduser -h /home -u 82 -s /bin/false -S www-data -G www-data \
+    && adduser -h /home -u 82 -s /bin/ash -S www-data -G www-data \
     && echo "www-data:www-data" | chpasswd \
     && sed -i "s/sftp-server/internal-sftp /" /etc/ssh/sshd_config \
     && echo "Match User www-data" >> /etc/ssh/sshd_config \

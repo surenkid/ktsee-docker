@@ -5,7 +5,8 @@ LABEL maintainer="surenkids@gmail.com"
 ENV SSH_PASSWORD="ktsee"
 
 # Change alpine repo for China network
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # ARG USER_ID=82
 # ARG GROUP_ID=82

@@ -10,4 +10,7 @@ EXPOSE 8000
 
 COPY ktsee.sh /ktsee.sh
 RUN chmod +x /ktsee.sh
+
+USER www-data
+
 ENTRYPOINT ["/ktsee.sh"]

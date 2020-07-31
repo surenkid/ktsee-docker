@@ -8,8 +8,10 @@ COPY ktsee.sh /ktsee.sh
 RUN chmod +x /ktsee.sh
 
 # Add application
-USER www-data
 COPY kodexplorer/ /var/www/html/
+RUN chmod -R 777 /var/www/html/
+
+USER www-data
 
 EXPOSE 8000
 

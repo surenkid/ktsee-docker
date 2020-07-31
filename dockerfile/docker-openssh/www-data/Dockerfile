@@ -21,13 +21,7 @@ RUN apk add --no-cache bash openssh \
 
 RUN addgroup -g 82 -S www-data \
     && adduser -h /home -u 82 -s /bin/ash -S www-data -G www-data \
-    && echo "www-data:www-data" | chpasswd \
-    && sed -i "s/sftp-server/internal-sftp /" /etc/ssh/sshd_config \
-    && echo "Match User www-data" >> /etc/ssh/sshd_config \
-    && echo "ChrootDirectory /root" >> /etc/ssh/sshd_config \
-    && echo "X11Forwarding no" >> /etc/ssh/sshd_config \
-    && echo "AllowTcpForwarding no" >> /etc/ssh/sshd_config \ 
-    && echo "ForceCommand internal-sftp" >> /etc/ssh/sshd_config
+    && echo "www-data:www-data" | chpasswd
 
 # Change timezone to Asia/Shanghai
 RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \

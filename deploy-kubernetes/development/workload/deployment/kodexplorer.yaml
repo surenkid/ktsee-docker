@@ -1,0 +1,55 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: kodexplorer
+    qcloud-app: kodexplorer
+  name: kodexplorer
+  namespace: development
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 0
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: kodexplorer
+      qcloud-app: kodexplorer
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        k8s-app: kodexplorer
+        qcloud-app: kodexplorer
+        qcloud-redeploy-timestamp: "1596175541860"
+    spec:
+      containers:
+      - image: surenkid/kodexplorer:latest
+        imagePullPolicy: Always
+        name: kodexplorer
+        resources:
+          limits:
+            cpu: 235m
+            memory: 352Mi
+          requests:
+            cpu: 225m
+            memory: 345Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /home/prod
+          name: nfs1
+        - mountPath: /home/dev
+          name: nfs2
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: nfs
+        nfs:
+          path: /volumes/web
+          server: 10.10.4.4

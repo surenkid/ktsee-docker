@@ -32,57 +32,29 @@ spec:
       containers:
       - env:
         - name: DB_HOST
-          valueFrom:
-            configMapKeyRef:
-              key: DB_HOST
-              name: gitea
-              optional: false
+          value: 10.10.4.5:3306
         - name: DB_NAME
-          valueFrom:
-            configMapKeyRef:
-              key: DB_NAME
-              name: gitea
-              optional: false
+          value: gitea
         - name: DB_PASSWD
-          valueFrom:
-            configMapKeyRef:
-              key: DB_PASSWD
-              name: gitea
-              optional: false
+          value: password
         - name: DB_TYPE
-          valueFrom:
-            configMapKeyRef:
-              key: DB_TYPE
-              name: gitea
-              optional: false
+          value: mysql
         - name: DB_USER
-          valueFrom:
-            configMapKeyRef:
-              key: DB_USER
-              name: gitea
-              optional: false
+          value: gitea
         - name: USER_GID
-          valueFrom:
-            configMapKeyRef:
-              key: USER_GID
-              name: gitea
-              optional: false
+          value: "1000"
         - name: USER_UID
-          valueFrom:
-            configMapKeyRef:
-              key: USER_UID
-              name: gitea
-              optional: false
+          value: "1000"
         image: gitea/gitea:1.11.1-linux-amd64
         imagePullPolicy: IfNotPresent
         name: gitea
         resources:
           limits:
-            cpu: 500m
-            memory: 1Gi
+            cpu: 940m
+            memory: 1410Mi
           requests:
-            cpu: 250m
-            memory: 256Mi
+            cpu: 900m
+            memory: 1380Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -97,7 +69,7 @@ spec:
       securityContext: {}
       terminationGracePeriodSeconds: 30
       volumes:
-      - name: nfs
-        nfs:
-          path: /volumes/gitea
-          server: 10.10.4.4
+      - name: disk
+        qcloudCbs:
+          cbsDiskId: disk-0umw83u2
+          fsType: ext4

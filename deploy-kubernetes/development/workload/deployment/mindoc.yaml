@@ -32,99 +32,43 @@ spec:
       containers:
       - env:
         - name: MINDOC_RUN_MODE
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_RUN_MODE
-              name: mindoc
-              optional: false
+          value: prod
         - name: MINDOC_DB_ADAPTER
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_DB_ADAPTER
-              name: mindoc
-              optional: false
+          value: mysql
         - name: MINDOC_DB_HOST
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_DB_HOST
-              name: mindoc
-              optional: false
+          value: 10.10.4.5
         - name: MINDOC_DB_DATABASE
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_DB_DATABASE
-              name: mindoc
-              optional: false
+          value: "mindoc"
         - name: MINDOC_DB_USERNAME
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_DB_USERNAME
-              name: mindoc
-              optional: false
+          value: mindoc
         - name: MINDOC_DB_PASSWORD
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_DB_PASSWORD
-              name: mindoc
-              optional: false
+          value: password
         - name: MINDOC_CACHE
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_CACHE
-              name: mindoc
-              optional: false
+          value: "true"
         - name: MINDOC_LDAP_ENABLE
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_LDAP_ENABLE
-              name: mindoc
-              optional: false
+          value: "true"
         - name: MINDOC_LDAP_HOST
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_LDAP_HOST
-              name: mindoc
-              optional: false
+          value: openldap
         - name: MINDOC_LDAP_PORT
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_LDAP_PORT
-              name: mindoc
-              optional: false
+          value: "389"
         - name: MINDOC_LDAP_ATTRIBUTE
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_LDAP_ATTRIBUTE
-              name: mindoc
-              optional: false
+          value: uid
         - name: MINDOC_LDAP_BASE
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_LDAP_BASE
-              name: mindoc
-              optional: false
+          value: dc=ktsee,dc=com
         - name: MINDOC_LDAP_USER
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_LDAP_USER
-              name: mindoc
-              optional: false
+          value: cn=admin,dc=ktsee,dc=com
         - name: MINDOC_LDAP_PASSWORD
-          valueFrom:
-            configMapKeyRef:
-              key: MINDOC_LDAP_PASSWORD
-              name: mindoc
-              optional: false
+          value: password
         image: surenkid/mindoc:2.0
         imagePullPolicy: IfNotPresent
         name: mindoc
         resources:
           limits:
-            cpu: 500m
-            memory: 1Gi
+            cpu: 235m
+            memory: 352Mi
           requests:
-            cpu: 250m
-            memory: 256Mi
+            cpu: 225m
+            memory: 345Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log

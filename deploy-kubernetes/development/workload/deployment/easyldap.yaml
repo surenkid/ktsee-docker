@@ -1,0 +1,49 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: easyldap
+    qcloud-app: easyldap
+  name: easyldap
+  namespace: development
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: easyldap
+      qcloud-app: easyldap
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        k8s-app: easyldap
+        qcloud-app: easyldap
+    spec:
+      containers:
+      - env:
+        - name: LDAP_BASE_DN
+          value: dc=ktsee,dc=com
+        - name: LDAP_SERVER
+          value: openldap
+        image: surenkid/docker-easyldap
+        imagePullPolicy: IfNotPresent
+        name: easyldap
+        resources:
+          limits:
+            cpu: 94m
+            memory: 141Mi
+          requests:
+            cpu: 90m
+            memory: 138Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

@@ -2,46 +2,53 @@ apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
   labels:
-    k8s-app: kodexplorer
-    qcloud-app: kodexplorer
-  name: kodexplorer
+    k8s-app: redisinsight
+    qcloud-app: redisinsight
+  name: redisinsight
   namespace: development
 spec:
   progressDeadlineSeconds: 600
-  replicas: 0
+  replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      k8s-app: kodexplorer
-      qcloud-app: kodexplorer
+      k8s-app: redisinsight
+      qcloud-app: redisinsight
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        k8s-app: kodexplorer
-        qcloud-app: kodexplorer
+        k8s-app: redisinsight
+        qcloud-app: redisinsight
     spec:
       containers:
-      - image: surenkid/kodexplorer:latest
-        imagePullPolicy: Always
-        name: kodexplorer
+      - env:
+        - name: REDISINSIGHT_HOST
+          value: 0.0.0.0
+        - name: REDISINSIGHT_PORT
+          value: "8001"
+        - name: REDISINSIGHT_HOME_DIR
+          value: /db
+        - name: LOG_DIR
+          value: /tmp
+        image: redislabs/redisinsight:1.6.2
+        imagePullPolicy: IfNotPresent
+        name: redisinsight
         resources:
           limits:
-            cpu: 235m
-            memory: 352Mi
+            cpu: 94m
+            memory: 141Mi
           requests:
-            cpu: 225m
-            memory: 345Mi
+            cpu: 90m
+            memory: 138Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-        - mountPath: /home/prod
-          name: nfs1
-        - mountPath: /home/dev
-          name: nfs2
+        - mountPath: /db
+          name: nfs
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -50,5 +57,5 @@ spec:
       volumes:
       - name: nfs
         nfs:
-          path: /volumes/web
+          path: /volumes/redisinsight
           server: 10.10.4.4

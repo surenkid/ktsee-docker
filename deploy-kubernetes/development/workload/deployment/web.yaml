@@ -17,10 +17,7 @@ spec:
       k8s-app: web
       qcloud-app: web
   strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
-    type: RollingUpdate
+    type: Recreate
   template:
     metadata:
       creationTimestamp: null
@@ -34,11 +31,11 @@ spec:
         name: nginx
         resources:
           limits:
-            cpu: 235m
-            memory: 353Mi
+            cpu: 141m
+            memory: 211Mi
           requests:
-            cpu: 225m
-            memory: 345Mi
+            cpu: 135m
+            memory: 207Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -83,7 +80,7 @@ spec:
         - mountPath: /var/www/html
           name: local-www
       - image: surenkid/ktsee-php:5.6-fpm
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         livenessProbe:
           failureThreshold: 1
           periodSeconds: 3
@@ -94,11 +91,11 @@ spec:
         name: php56
         resources:
           limits:
-            cpu: 188m
-            memory: 282Mi
+            cpu: 376m
+            memory: 564Mi
           requests:
-            cpu: 180m
-            memory: 276Mi
+            cpu: 360m
+            memory: 552Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -126,11 +123,11 @@ spec:
         name: php72
         resources:
           limits:
-            cpu: 282m
-            memory: 423Mi
+            cpu: 188m
+            memory: 282Mi
           requests:
-            cpu: 270m
-            memory: 414Mi
+            cpu: 180m
+            memory: 276Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log

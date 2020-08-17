@@ -45,7 +45,14 @@ spec:
         volumeMounts:
         - mountPath: /home/prod
           name: nfs1
+          readOnly: true
+          subPath: app
         - mountPath: /home/dev
+          name: nfs2
+          subPath: web
+        - mountPath: /root/nfs1
+          name: nfs1
+        - mountPath: /root/nfs2
           name: nfs2
       dnsPolicy: ClusterFirst
       restartPolicy: Always
@@ -55,9 +62,9 @@ spec:
       volumes:
       - name: nfs1
         nfs:
-          path: /volumes/app
+          path: /volumes
           server: 10.10.3.4
       - name: nfs2
         nfs:
-          path: /volumes/web
+          path: /volumes
           server: 10.10.4.4

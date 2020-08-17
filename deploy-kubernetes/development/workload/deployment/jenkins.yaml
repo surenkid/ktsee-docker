@@ -2,53 +2,55 @@ apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
   labels:
-    k8s-app: kodexplorer
-    qcloud-app: kodexplorer
-  name: kodexplorer
+    k8s-app: jenkins
+    qcloud-app: jenkins
+  name: jenkins
   namespace: development
 spec:
   progressDeadlineSeconds: 600
-  replicas: 0
+  replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      k8s-app: kodexplorer
-      qcloud-app: kodexplorer
+      k8s-app: jenkins
+      qcloud-app: jenkins
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        k8s-app: kodexplorer
-        qcloud-app: kodexplorer
+        k8s-app: jenkins
+        qcloud-app: jenkins
     spec:
       containers:
-      - image: surenkid/kodexplorer:latest
+      - image: surenkid/docker-jenkins:latest
         imagePullPolicy: Always
-        name: kodexplorer
+        name: jenkins
         resources:
           limits:
-            cpu: 235m
-            memory: 352Mi
+            cpu: 940m
+            memory: 1410Mi
           requests:
-            cpu: 225m
-            memory: 345Mi
+            cpu: 900m
+            memory: 1380Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-        - mountPath: /home/prod
-          name: nfs1
-        - mountPath: /home/dev
-          name: nfs2
+        - mountPath: /var/jenkins_home
+          name: disk
+          subPath: home
+        - mountPath: /home
+          name: disk
+          subPath: myhome
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
       volumes:
-      - name: nfs
-        nfs:
-          path: /volumes/web
-          server: 10.10.4.4
+      - name: disk
+        qcloudCbs:
+          cbsDiskId: disk-g6vodr7o
+          fsType: ext4

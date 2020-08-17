@@ -15,10 +15,7 @@ spec:
       k8s-app: php72-supervisor
       qcloud-app: php72-supervisor
   strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
-    type: RollingUpdate
+    type: Recreate
   template:
     metadata:
       labels:
@@ -29,13 +26,22 @@ spec:
       - image: surenkid/ktsee-php:7.2-fpm-supervisor
         imagePullPolicy: Always
         name: php72-supervisor
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - /root/readiness-probe.sh
+          failureThreshold: 1
+          periodSeconds: 3
+          successThreshold: 1
+          timeoutSeconds: 2
         resources:
           limits:
-            cpu: 893m
-            memory: 1340Mi
+            cpu: 3720m
+            memory: 6175Mi
           requests:
-            cpu: 855m
-            memory: 1311Mi
+            cpu: 3610m
+            memory: 6061Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -45,13 +51,16 @@ spec:
           name: nfs
           readOnly: true
           subPath: app/php72-supervisord/supervisor.d
-        - mountPath: etc/crontabs
+        - mountPath: /etc/crontabs
           name: nfs
           readOnly: true
           subPath: app/php72-supervisord/crontabs
-        - mountPath: /var/www/html/web
+        - mountPath: /usr/local/etc/php-fpm.d
           name: nfs
           readOnly: true
+          subPath: app/php72-supervisord/php-fpm.d
+        - mountPath: /root/remote
+          name: nfs
           subPath: app
       dnsPolicy: ClusterFirst
       imagePullSecrets:

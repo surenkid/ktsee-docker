@@ -23,7 +23,6 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      creationTimestamp: null
       labels:
         k8s-app: vini-mall
         qcloud-app: vini-mall
@@ -37,7 +36,7 @@ spec:
                 operator: In
                 values:
                 - vini-mall
-            topologyKey: "kubernetes.io/hostname"
+            topologyKey: kubernetes.io/hostname
       containers:
       - image: nginx:1.17.10-alpine
         imagePullPolicy: IfNotPresent
@@ -94,7 +93,6 @@ spec:
           name: local-www
       - env:
         - name: UPLOAD_SUB_FOLDER
-          value: 
         image: surenkid/ktsee-cron-rsync:latest
         imagePullPolicy: Always
         name: cron-sync

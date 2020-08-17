@@ -37,7 +37,7 @@ spec:
                 operator: In
                 values:
                 - truly-platform
-            topologyKey: "kubernetes.io/hostname"
+            topologyKey: kubernetes.io/hostname
       containers:
       - image: nginx:1.17.10-alpine
         imagePullPolicy: IfNotPresent
@@ -45,7 +45,7 @@ spec:
         resources:
           limits:
             cpu: 329m
-            memory: 493.5Mi
+            memory: 505Mi
           requests:
             cpu: 315m
             memory: 483Mi
@@ -94,7 +94,6 @@ spec:
           name: local-www
       - env:
         - name: UPLOAD_SUB_FOLDER
-          value: 
         image: surenkid/ktsee-cron-rsync:latest
         imagePullPolicy: Always
         name: cron-sync
@@ -110,7 +109,7 @@ spec:
         resources:
           limits:
             cpu: 141m
-            memory: 211.5Mi
+            memory: 216Mi
           requests:
             cpu: 135m
             memory: 207Mi

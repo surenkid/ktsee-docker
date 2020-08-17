@@ -1,12 +1,10 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  annotations:
-    description: gapi.sumeils.com
   labels:
-    k8s-app: global-api
-    qcloud-app: global-api
-  name: global-api
+    k8s-app: learn-front
+    qcloud-app: learn-front
+  name: learn-front
   namespace: production
 spec:
   progressDeadlineSeconds: 600
@@ -14,8 +12,8 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      k8s-app: global-api
-      qcloud-app: global-api
+      k8s-app: learn-front
+      qcloud-app: learn-front
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -24,8 +22,8 @@ spec:
   template:
     metadata:
       labels:
-        k8s-app: global-api
-        qcloud-app: global-api
+        k8s-app: learn-front
+        qcloud-app: learn-front
     spec:
       containers:
       - image: nginx:1.17.10-alpine
@@ -33,11 +31,11 @@ spec:
         name: nginx
         resources:
           limits:
-            cpu: 141m
-            memory: 212Mi
+            cpu: 376m
+            memory: 564Mi
           requests:
-            cpu: 135m
-            memory: 207Mi
+            cpu: 360m
+            memory: 552Mi
         securityContext:
           privileged: false
         terminationMessagePath: /dev/termination-log
@@ -49,43 +47,9 @@ spec:
           subPath: nginx
         - mountPath: /var/www/html
           name: local-www
-      - image: surenkid/ktsee-php:5.3-fpm
-        imagePullPolicy: IfNotPresent
-        name: php53
-        resources:
-          limits:
-            cpu: 705m
-            memory: 1058Mi
-          requests:
-            cpu: 675m
-            memory: 1035Mi
-        securityContext:
-          privileged: false
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        volumeMounts:
-        - mountPath: /usr/local/etc/php
-          name: nfs
-          readOnly: true
-          subPath: php
-        - mountPath: /usr/local/etc/php-fpm.d
-          name: nfs
-          readOnly: true
-          subPath: php-fpm.d
-        - mountPath: /var/www/html
-          name: local-www
       - image: surenkid/ktsee-cron-rsync:latest
-        imagePullPolicy: Always
-        name: cron-sync
-        readinessProbe:
-          exec:
-            command:
-            - sh
-            - /root/readiness-probe.sh
-          failureThreshold: 1
-          periodSeconds: 3
-          successThreshold: 1
-          timeoutSeconds: 2
+        imagePullPolicy: IfNotPresent
+        name: cron-rsync
         resources:
           limits:
             cpu: 94m
@@ -113,7 +77,7 @@ spec:
       volumes:
       - name: nfs
         nfs:
-          path: /volumes/app/gapi.sumeils.com
+          path: /volumes/app/learn.sumeils.com
           server: 10.10.3.4
       - emptyDir: {}
         name: local-www

@@ -1,0 +1,57 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: coscmd-backup
+    qcloud-app: coscmd-backup
+  name: coscmd-backup
+  namespace: production
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: coscmd-backup
+      qcloud-app: coscmd-backup
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        k8s-app: coscmd-backup
+        qcloud-app: coscmd-backup
+    spec:
+      containers:
+      - image: surenkid/ktsee-coscmd
+        imagePullPolicy: IfNotPresent
+        name: coscmd
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /nfs
+          name: nfs
+        - mountPath: /root
+          name: nfs
+          subPath: app/coscmd
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: qcloudregistrykey
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: nfs
+        nfs:
+          path: /volumes
+          server: 10.10.3.4

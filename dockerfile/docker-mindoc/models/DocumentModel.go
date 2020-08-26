@@ -6,16 +6,16 @@ import (
 	"fmt"
 	"strconv"
 
+	"bytes"
+	"github.com/PuerkitoBio/goquery"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/lifei6671/mindoc/cache"
 	"github.com/lifei6671/mindoc/conf"
+	"github.com/lifei6671/mindoc/utils"
 	"os"
 	"path/filepath"
-	"github.com/PuerkitoBio/goquery"
-	"bytes"
 	"strings"
-	"github.com/lifei6671/mindoc/utils"
 )
 
 // Document struct.
@@ -38,7 +38,7 @@ type Document struct {
 	ModifyTime time.Time `orm:"column(modify_time);type(datetime);auto_now" json:"modify_time"`
 	ModifyAt   int       `orm:"column(modify_at);type(int)" json:"-"`
 	Version    int64     `orm:"column(version);type(bigint);" json:"version"`
-	//是否展开子目录：0 否/1 是
+	//是否展开子目录：0 否/1 是 /2 空间节点，单击时展开下一级
 	IsOpen     int           `orm:"column(is_open);type(int);default(0)" json:"is_open"`
 	AttachList []*Attachment `orm:"-" json:"attach"`
 }
@@ -301,7 +301,18 @@ func (item *Document) Processor() *Document {
 			if selector := docQuery.Find("div.wiki-bottom").First(); selector.Size() <= 0 && item.MemberId > 0 {
 				//处理文档结尾信息
 				docCreator, err := NewMember().Find(item.MemberId, "real_name", "account")
-				release := "<div class=\"wiki-bottom\">文档更新时间: " + item.ModifyTime.Local().Format("2006-01-02 15:04") + " &nbsp;&nbsp;作者："
+				release := "<div class=\"wiki-bottom\">"
+				if item.ModifyAt > 0 {
+					docModify, err := NewMember().Find(item.ModifyAt, "real_name", "account")
+					if err == nil {
+						if docModify.RealName != "" {
+							release += "最后编辑: " + docModify.RealName + " &nbsp;"
+						} else {
+							release += "最后编辑: " + docModify.Account + " &nbsp;"
+						}
+					}
+				}
+				release += "文档更新时间: " + item.ModifyTime.Local().Format("2006-01-02 15:04") + " &nbsp;&nbsp;作者："
 				if err == nil && docCreator != nil {
 					if docCreator.RealName != "" {
 						release += docCreator.RealName
@@ -317,15 +328,49 @@ func (item *Document) Processor() *Document {
 					selector.First().AppendHtml(release)
 				}
 			}
+			cdnimg := beego.AppConfig.String("cdnimg")
 
-			//设置图片为CDN地址
-			if cdnimg := beego.AppConfig.String("cdnimg"); cdnimg != "" {
-				docQuery.Find("img").Each(func(i int, contentSelection *goquery.Selection) {
-					if src, ok := contentSelection.Attr("src"); ok && strings.HasPrefix(src, "/uploads/") {
-						contentSelection.SetAttr("src", utils.JoinURI(cdnimg, src))
+			docQuery.Find("img").Each(func(i int, selection *goquery.Selection) {
+
+				if src, ok := selection.Attr("src"); ok {
+					src = strings.TrimSpace(strings.ToLower(src))
+					//过滤掉没有链接的图片标签
+					if src == "" || strings.HasPrefix(src, "data:text/html") {
+						selection.Remove()
+						return
 					}
-				})
-			}
+
+					//设置图片为CDN地址
+					if cdnimg != "" && strings.HasPrefix(src, "/uploads/") {
+						selection.SetAttr("src", utils.JoinURI(cdnimg, src))
+					}
+
+				}
+				selection.RemoveAttr("onerror").RemoveAttr("onload")
+			})
+			//过滤A标签的非法连接
+			docQuery.Find("a").Each(func(i int, selection *goquery.Selection) {
+				if val, exists := selection.Attr("href"); exists {
+					if val == "" {
+						selection.SetAttr("href", "#")
+						return
+					}
+					val = strings.Replace(strings.ToLower(val), " ", "",-1)
+					//移除危险脚本链接
+					if strings.HasPrefix(val, "data:text/html") ||
+						strings.HasPrefix(val, "vbscript:") ||
+						strings.HasPrefix(val, "&#106;avascript:") ||
+						strings.HasPrefix(val, "javascript:") {
+						selection.SetAttr("href", "#")
+					}
+				}
+				//移除所有 onerror 属性
+				selection.RemoveAttr("onerror").RemoveAttr("onload").RemoveAttr("onclick")
+			})
+
+			docQuery.Find("script").Remove()
+			docQuery.Find("link").Remove()
+			docQuery.Find("vbscript").Remove()
 
 			if html, err := docQuery.Html(); err == nil {
 				item.Release = strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(html), "<html><head></head><body>"), "</body></html>")

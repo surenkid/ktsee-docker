@@ -133,6 +133,14 @@ RUN cd /tmp \
       && tar -xof yaf.tar.gz -C /usr/src/php/ext/yaf --strip-components=1 \
       && rm -rf /tmp/*
 
+# Change timezone to Asia/Shanghai
+RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+	&& echo "Asia/Shanghai" > /etc/timezone \
+	&& apk del tzdata
+
+# Add bash to alpine
+RUN apk add --no-cache bash
+
 # add php extenstions
 RUN apk add -U --no-cache \
   autoconf \
@@ -156,14 +164,8 @@ RUN apk add -U --no-cache \
   && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr/include --with-freetype-dir=/usr/include \
   && docker-php-ext-install gd \
   && docker-php-ext-configure ldap --with-libdir=lib/ \
-  && docker-php-ext-install mysql \
   && docker-php-ext-install ldap \
-  && docker-php-ext-install bcmath \
-  && docker-php-ext-install soap \
-  && docker-php-ext-install xsl \
-  && docker-php-ext-install mcrypt \
-  && docker-php-ext-install mbstring pdo pdo_mysql zip \
-	&& docker-php-ext-install iconv mysqli phpredis yaf \
+	&& docker-php-ext-install mysql bcmath soap xsl mcrypt mbstring pdo pdo_mysql zip iconv mysqli phpredis yaf \
   && apk del --purge autoconf alpine-sdk mariadb-dev openldap-dev \
   && apk add -U mariadb-client-libs libldap \
   && cd /usr/local/bin \
@@ -212,14 +214,6 @@ RUN set -ex \
 
 # set yaf to name space mode
 RUN echo 'yaf.use_namespace = 1' | tee -a /usr/local/etc/php/conf.d/docker-php-ext-yaf.ini
-
-# Change timezone to Asia/Shanghai
-RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && echo "Asia/Shanghai" > /etc/timezone \
-    && apk del tzdata
-
-# Add bash to alpine
-RUN apk add --no-cache bash
 
 EXPOSE 9000
 CMD ["php-fpm"]

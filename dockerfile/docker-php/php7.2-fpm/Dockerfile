@@ -16,9 +16,10 @@ RUN apk add --no-cache libxml2-dev libmcrypt-dev libressl-dev unixodbc-dev libst
 RUN docker-php-ext-install gd mysqli pdo_mysql zip bcmath ldap
 
 # Install REDIS, PDO_SQLSRV and MCRYPT using pecl
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+RUN apk add --no-cache --virtual .persistent-deps freetds unixodbc \
+      && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS unixodbc-dev freetds-dev \
       && pecl channel-update pecl.php.net \
-      && pecl install redis-5.3.1 mcrypt-1.0.3 sqlsrv-5.6.1 pdo_sqlsrv-5.6.1 yar-2.0.5 \
+      && pecl install redis-5.3.1 mcrypt-1.0.3 sqlsrv-5.8.1 pdo_sqlsrv-5.8.1 yar-2.0.5 \
       && docker-php-ext-enable redis mcrypt sqlsrv pdo_sqlsrv yar \
       && apk del .build-deps
 

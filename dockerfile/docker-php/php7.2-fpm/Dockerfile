@@ -1,10 +1,5 @@
-FROM microsoft/mssql-tools as mssql
 FROM php:7.2.30-fpm-alpine3.11
 LABEL maintainer="surenkids@gmail.com"
-
-COPY --from=mssql /opt/microsoft/ /opt/microsoft/
-COPY --from=mssql /opt/mssql-tools/ /opt/mssql-tools/
-COPY --from=mssql /usr/lib/libmsodbcsql-13.so /usr/lib/libmsodbcsql-13.so
 
 # Change alpine repo for China network
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
@@ -21,7 +16,11 @@ RUN apk add --no-cache libxml2-dev libmcrypt-dev libressl-dev unixodbc-dev libst
 RUN docker-php-ext-install gd mysqli pdo_mysql zip bcmath ldap
 
 # Install REDIS, PDO_SQLSRV and MCRYPT using pecl
-RUN apk add --no-cache --virtual .persistent-deps freetds unixodbc \
+RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.6.1.1-1_amd64.apk \
+      && curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_17.6.1.1-1_amd64.apk \
+      && apk add --allow-untrusted msodbcsql17_17.6.1.1-1_amd64.apk \
+      && apk add --allow-untrusted mssql-tools_17.6.1.1-1_amd64.apk \
+      && apk add --no-cache --virtual .persistent-deps freetds unixodbc \
       && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS unixodbc-dev freetds-dev \
       && docker-php-ext-install pdo_dblib \
       && pecl channel-update pecl.php.net \

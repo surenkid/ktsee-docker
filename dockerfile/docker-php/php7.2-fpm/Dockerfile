@@ -13,7 +13,7 @@ RUN apk add --no-cache freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev \
 RUN apk add --no-cache libxml2-dev libmcrypt-dev libressl-dev unixodbc-dev libstdc++ libzip-dev openldap-dev curl-dev
 
 # Install extensions using docker-php-ext-install
-RUN docker-php-ext-install gd mysqli pdo_mysql zip bcmath ldap
+RUN docker-php-ext-install gd mysqli pdo_mysql pdo_dblib zip bcmath ldap
 
 # Install REDIS, PDO_SQLSRV and MCRYPT using pecl
 RUN apk add --no-cache --virtual .persistent-deps freetds unixodbc \

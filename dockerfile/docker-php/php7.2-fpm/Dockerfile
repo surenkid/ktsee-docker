@@ -1,5 +1,10 @@
+FROM microsoft/mssql-tools as mssql
 FROM php:7.2.30-fpm-alpine3.11
 LABEL maintainer="surenkids@gmail.com"
+
+COPY --from=mssql /opt/microsoft/ /opt/microsoft/
+COPY --from=mssql /opt/mssql-tools/ /opt/mssql-tools/
+COPY --from=mssql /usr/lib/libmsodbcsql-13.so /usr/lib/libmsodbcsql-13.so
 
 # Change alpine repo for China network
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories

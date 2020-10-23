@@ -1,0 +1,72 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: php72-supervisor
+    qcloud-app: php72-supervisor
+  name: php72-supervisor
+  namespace: development
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: php72-supervisor
+      qcloud-app: php72-supervisor
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        k8s-app: php72-supervisor
+        qcloud-app: php72-supervisor
+    spec:
+      containers:
+      - image: ccr.ccs.tencentyun.com/sumei/ktsee-php7.2-fpm-supervisor:latest
+        imagePullPolicy: Always
+        name: php72-supervisor
+        resources:
+          limits:
+            cpu: 940m
+            memory: 1410Mi
+          requests:
+            cpu: 900m
+            memory: 1380Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/supervisor.d
+          name: nfs
+          readOnly: true
+          subPath: php72-supervisord/supervisor.d
+        - mountPath: etc/crontabs
+          name: nfs
+          readOnly: true
+          subPath: php72-supervisord/crontabs
+        - mountPath: /usr/local/etc/php
+          name: nfs
+          readOnly: true
+          subPath: php/72-php-conf
+        - mountPath: /usr/local/etc/php-fpm.d
+          name: nfs
+          readOnly: true
+          subPath: php72-supervisord/php-fpm.d
+        - mountPath: /var/www/html
+          name: nfs
+          readOnly: true
+          subPath: web
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: qcloudregistrykey
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: nfs
+        nfs:
+          path: /volumes
+          server: 10.10.4.4

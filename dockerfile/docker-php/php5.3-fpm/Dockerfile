@@ -161,8 +161,8 @@ RUN apk add -U --no-cache \
   && echo extension=memcached.so > /usr/local/etc/php/conf.d/memcached.ini \
   && pecl install memcache-2.2.7 \
   && echo extension=memcache.so > /usr/local/etc/php/conf.d/memcache.ini \
-	&& pecl install mongodb \
-	&& echo extension=mongodb.so > /usr/local/etc/php/conf.d/mongodb.ini \
+	&& pecl install mongo-1.6.16 \
+	&& echo extension=mongo.so > /usr/local/etc/php/conf.d/mongo.ini \
   && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr/include --with-freetype-dir=/usr/include \
   && docker-php-ext-install gd \
   && docker-php-ext-configure ldap --with-libdir=lib/ \

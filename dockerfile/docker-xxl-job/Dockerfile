@@ -3,8 +3,16 @@ LABEL maintainer="surenkids@gmail.com"
 
 ENV PARAMS=""
 
-ENV TZ=PRC
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# ENV TZ=PRC
+# RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Change timezone to Asia/Shanghai
+RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && apk del tzdata
+
+# Add bash to alpine
+RUN apk add --no-cache bash
 
 ADD xxl-job-executor-sample-springboot-*.jar /app.jar
 

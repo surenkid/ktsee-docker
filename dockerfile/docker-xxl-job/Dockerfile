@@ -12,7 +12,7 @@ RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && apk del tzdata
 
 # Add depends extensions to alpine
-RUN apk add --no-cache bash curl php7 php7-curl php7-pdo_mysql
+RUN apk add --no-cache bash curl php7 php7-curl php7-pdo_mysql php7-json
 
 ADD xxl-job-executor-sample-springboot-*.jar /app.jar
 

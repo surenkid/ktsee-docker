@@ -1,4 +1,4 @@
-FROM python:3.6.10-alpine3.11
+FROM python:3.9.0-alpine3.12
 LABEL maintainer="surenkids@gmail.com"
 
 # Change alpine repo for China network

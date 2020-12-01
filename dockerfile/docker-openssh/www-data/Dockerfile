@@ -8,6 +8,12 @@ ENV SSH_PASSWORD="ktsee"
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
+# ARG USER_ID=82
+# ARG GROUP_ID=82
+
+# RUN addgroup -g ${GROUP_ID} -S ktsee && \
+#  adduser -h /home -u ${USER_ID} -s /bin/false -S ktsee -G ktsee
+
 # RUN apk add --no-cache bash busybox-extras
 
 # Install openssh-server and bash
@@ -19,14 +25,15 @@ RUN apk add --no-cache bash openssh \
     && ssh-keygen -t ed25519 -P "" -f /etc/ssh/ssh_host_ed25519_key \
     && echo "root:${SSH_PASSWORD}" | chpasswd
 
-RUN addgroup -g 82 -S www-data \
-    && adduser -h /home -u 82 -s /bin/ash -S www-data -G www-data \
-    && echo "www-data:www-data" | chpasswd
-
 # Change timezone to Asia/Shanghai
 RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
     && apk del tzdata
+
+# Add www-data user and group
+RUN addgroup -g 82 -S www-data \
+    && adduser -h /home -u 82 -s /bin/ash -S www-data -G www-data \
+    && echo "www-data:www-data" | chpasswd
 
 # Open ssh port
 EXPOSE 22

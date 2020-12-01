@@ -22,17 +22,17 @@ fi
 remote_update_time=`cat /root/remote/last-part-upload.ktsee`
 local_update_time=`cat /root/last-full-download.ktsee`
 if [ $remote_update_time -gt $local_update_time ]; then
-    # Pull code from remote partly
+    # Download files from remote partly
     echo "Download files from $remote_dir/ to $local_dir/"
 
-    # if init.ktsee exist, pull partly
+    # if init.ktsee exist, download partly
     if [ -f /root/init.ktsee ]; then
         rsync -avzupgo $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee >> /proc/self/fd/2   
     else
         rsync -avzupgoI $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee >> /proc/self/fd/2
         touch /root/init.ktsee
 
-        # do not use inotify-watch when no upload folder config
+        # do not use inotify-watch if no inotify-watch-path.ktsee(upload folder config)
         if [ -s /root/inotify-watch-path.ktsee ]; then
             # init inotify watch
             sh /root/inotify-watch.sh &

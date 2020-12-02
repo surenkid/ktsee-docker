@@ -36,7 +36,7 @@ if [ $remote_update_time -gt $local_update_time ]; then
         rsync -avzupgoI $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee --exclude-from=$remote_dir/rsync-exclude-list.ktsee >> /proc/self/fd/2
         touch /root/init.ktsee
 
-        # do not use inotify-watch if no inotify-watch-path.ktsee(upload folder config)
+        # do not use inotify-watch if inotify-watch-path.ktsee(upload folder config) is blank
         if [ -s /root/inotify-watch-path.ktsee ]; then
             # init inotify watch
             sh /root/inotify-watch.sh &

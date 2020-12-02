@@ -14,8 +14,10 @@ RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 RUN apk add --no-cache mysql-client bash
 
 # Install coscmd
-RUN python -m pip install --upgrade pip \
-  && pip install coscmd
+RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
+  && python -m pip install --upgrade pip \
+  && pip install coscmd \
+  && apk del .build-deps gcc musl-dev
 
 # Add coscmd script to crontab
 RUN echo '0       2       *       *       *       sh /root/coscmd.sh' | tee -a /etc/crontabs/root

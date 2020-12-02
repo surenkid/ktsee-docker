@@ -31,9 +31,9 @@ if [ $remote_update_time -gt $local_update_time ]; then
 
     # if init.ktsee exist, download partly
     if [ -f /root/init.ktsee ]; then
-        rsync -avzupgo $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee --exclude-from=$remote_dir/rsync-exclude-list.ktsee >> /proc/self/fd/2   
+        rsync -avzupgo $remote_dir/ $local_dir/ --exclude=*.ktsee --exclude-from=$remote_dir/rsync-exclude-list.ktsee >> /proc/self/fd/2   
     else
-        rsync -avzupgoI $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee --exclude-from=$remote_dir/rsync-exclude-list.ktsee >> /proc/self/fd/2
+        rsync -avzupgoI $remote_dir/ $local_dir/ --exclude=*.ktsee --exclude-from=$remote_dir/rsync-exclude-list.ktsee >> /proc/self/fd/2
         touch /root/init.ktsee
 
         # do not use inotify-watch if inotify-watch-path.ktsee(upload folder config) is blank

@@ -18,6 +18,10 @@ if [ ! -f $remote_dir/last-part-upload.ktsee ]; then
     echo $cur_timestamp > $remote_dir/last-part-upload.ktsee
 fi
 
+if [ ! -f $remote_dir/rsync-exclude-list.ktsee ]; then
+    touch $remote_dir/rsync-exclude-list.ktsee
+fi
+
 # check newer, if remote is newer, pull from remote to local
 remote_update_time=`cat /root/remote/last-part-upload.ktsee`
 local_update_time=`cat /root/last-full-download.ktsee`
@@ -27,9 +31,9 @@ if [ $remote_update_time -gt $local_update_time ]; then
 
     # if init.ktsee exist, download partly
     if [ -f /root/init.ktsee ]; then
-        rsync -avzupgo $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee >> /proc/self/fd/2   
+        rsync -avzupgo $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee --exclude-from=$remote_dir/rsync-exclude-list.ktsee >> /proc/self/fd/2   
     else
-        rsync -avzupgoI $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee >> /proc/self/fd/2
+        rsync -avzupgoI $remote_dir/ $local_dir/ --exclude=last-part-upload.ktsee --exclude-from=$remote_dir/rsync-exclude-list.ktsee >> /proc/self/fd/2
         touch /root/init.ktsee
 
         # do not use inotify-watch if no inotify-watch-path.ktsee(upload folder config)

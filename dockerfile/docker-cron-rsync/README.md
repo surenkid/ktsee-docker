@@ -1,20 +1,9 @@
-This image is used for sync code from NFS to local disk, and sync content of user-generated to NFS, every 5 mins.
+This image is used for sync files from remote machine to local machine, and sync content of user-generated to remote machine, every 1 minute.
 
-1. Write a sync shell script named `cron-rsync.sh`, and saved to `/root/rsync`
-2. Add volume for source code to `/root/code`, where your code on NFS
-3. Add volume for the content of user-generated to `root/upload`, where you want to upload to NFS
-4. This image was made by surenkid.
+1. Add volume for remote files to `/root/remote`, where your code on remote machine
+2. Add volume for local files to `/var/www/html`, where your code on local machine
+    - (So you can share this folder for other service in docker)
+3. Add environment variable `UPLOAD_SUB_FOLDER`, set a folder which you want to upload to remote machine
+    - (If you don't need upload local files to remote machine, ignore this step)
+4. Set readiness probe command `sh /root/readiness-probe.sh`
 
-`cron-rsync.sh` example:
-```
-#!/bin/sh
-local_dir=/var/www/html/
-code_dir=/root/code/
-upload_dir=/root/upload/
-
-# Pull code from remote
-rsync -avzhupgo $code_dir $local_dir >> /proc/self/fd/2
-
-# Push user generate content to remote
-rsync -avzhupgo --include="upload" --exclude="/*" $local_dir $upload_dir >> /proc/self/fd/2
-```

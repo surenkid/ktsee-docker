@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    description: xxl-job-executor-php
+  labels:
+    k8s-app: xxl-job-executor-php
+    qcloud-app: xxl-job-executor-php
+  name: xxl-job-executor-php
+  namespace: production
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: xxl-job-executor-php
+      qcloud-app: xxl-job-executor-php
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8s-app: xxl-job-executor-php
+        qcloud-app: xxl-job-executor-php
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: qcloud-app
+                operator: In
+                values:
+                - xxl-job-executor-php
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - env:
+        - name: PARAMS
+          value: --xxl.job.admin.addresses=http://xxl-job-admin:8080/xxl-job-admin --xxl.job.executor.appname=sumei-php-job
+        image: surenkid/xxl-job-executor:latest
+        imagePullPolicy: IfNotPresent
+        name: xxl-job-executor
+        resources:
+          limits:
+            cpu: 470m
+            memory: 705Mi
+          requests:
+            cpu: 450m
+            memory: 690Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: qcloudregistrykey
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

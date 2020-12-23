@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    description: xxl-job-admin
+  labels:
+    k8s-app: xxl-job-admin
+    qcloud-app: xxl-job-admin
+  name: xxl-job-admin
+  namespace: production
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: xxl-job-admin
+      qcloud-app: xxl-job-admin
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8s-app: xxl-job-admin
+        qcloud-app: xxl-job-admin
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: qcloud-app
+                operator: In
+                values:
+                - xxl-job-admin
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - env:
+        - name: PARAMS
+          value: --spring.datasource.url=jdbc:mysql://10.10.4.9:3306/sumei_xxl_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai --spring.datasource.username=root --spring.datasource.password=SziaGOzfX69EP3yU095z3Nti
+        image: xuxueli/xxl-job-admin:2.2.0
+        imagePullPolicy: IfNotPresent
+        name: xxl-job-admin
+        resources:
+          limits:
+            cpu: 470m
+            memory: 705Mi
+          requests:
+            cpu: 450m
+            memory: 690Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: qcloudregistrykey
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

@@ -10,7 +10,7 @@ RUN apk add --no-cache freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev \
       && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 
 # Install dependencies
-RUN apk add --no-cache libxml2-dev libmcrypt-dev libressl-dev unixodbc-dev libstdc++ libzip-dev openldap-dev curl-dev librdkafka
+RUN apk add --no-cache libxml2-dev libmcrypt-dev libressl-dev unixodbc-dev libstdc++ libzip-dev openldap-dev curl-dev librdkafka-dev
 
 # Install extensions using docker-php-ext-install
 RUN docker-php-ext-install gd mysqli pdo_mysql zip bcmath ldap

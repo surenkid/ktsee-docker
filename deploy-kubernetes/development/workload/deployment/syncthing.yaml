@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    description: dev-syncthing
+  labels:
+    k8s-app: dev-syncthing
+    qcloud-app: dev-syncthing
+  name: dev-syncthing
+  namespace: development
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s-app: dev-syncthing
+      qcloud-app: dev-syncthing
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s-app: dev-syncthing
+        qcloud-app: dev-syncthing
+    spec:
+      containers:
+      - env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        image: syncthing/syncthing:1.1.0
+        imagePullPolicy: IfNotPresent
+        name: syncthing
+        resources:
+          limits:
+            cpu: 94m
+            memory: 141Mi
+          requests:
+            cpu: 90m
+            memory: 138Mi
+        securityContext:
+          privileged: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/syncthing
+          name: nfs
+          subPath: syncthing
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: qcloudregistrykey
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: nfs
+        nfs:
+          path: /volumes
+          server: 10.10.3.10

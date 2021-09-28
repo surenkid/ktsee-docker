@@ -1,22 +1,6 @@
 FROM python:3.9.7-slim
 LABEL maintainer="surenkids@gmail.com"
 
-# Change alpine repo for China network
-#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
-#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-
-# Change pip repo for China network
-RUN pip install -U pip \
-    && pip config set global.index-url http://mirrors.tencentyun.com/pypi/simple \
-    && pip config set install.trusted-host mirrors.tencentyun.com
-
-# Change timezone to Asia/Shanghai
-RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && echo "Asia/Shanghai" > /etc/timezone \
-    && apk del tzdata
-
-WORKDIR /usr/src/app
-
 # ensure www-data user exists
 RUN set -x \
 	&& addgroup -g 82 -S www-data \
@@ -27,3 +11,19 @@ RUN set -x \
 # http://git.alpinelinux.org/cgit/aports/tree/main/nginx-initscripts/nginx-initscripts.pre-install?h=v3.3.2
 
 USER www-data
+
+# Change pip repo for China network
+RUN pip install -U pip \
+    && pip config set global.index-url http://mirrors.tencentyun.com/pypi/simple \
+    && pip config set install.trusted-host mirrors.tencentyun.com
+
+# Change timezone to Asia/Shanghai
+RUN apt update \
+    && apt install -y tzdata \
+    && ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && dpkg-reconfigure --frontend noninteractive tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/src/app
+

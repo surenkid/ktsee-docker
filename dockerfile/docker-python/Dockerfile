@@ -2,8 +2,10 @@ FROM python:3.9.7-slim
 LABEL maintainer="surenkids@gmail.com"
 
 # ensure www-data user exists
-RUN groupadd -g 82 -o www-data \
-	&& useradd -m -u 82 -g 82 -o -s /bin/bash www-data
+RUN userdel www-data \
+	&& groupdel www-data \
+	&& groupadd -g 82 -o www-data \
+	&& useradd -m -u 82 -g 82 -o -s /sbin/nologin www-data
 
 USER www-data
 

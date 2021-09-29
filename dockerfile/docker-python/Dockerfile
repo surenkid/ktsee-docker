@@ -1,10 +1,8 @@
 FROM python:3.9.7-slim
 LABEL maintainer="surenkids@gmail.com"
 
-
-
 # install ps & top
-RUN apt-get update && apt-get install procps
+RUN apt-get update -y && apt-get install procps -y
 
 # Change pip repo for China network
 RUN pip install -U pip \
